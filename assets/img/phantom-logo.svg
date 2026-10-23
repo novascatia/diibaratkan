@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Outer jagged starburst ring -->
+  <polygon points="120,4 146,42 192,18 184,66 232,74 198,112 236,148 186,162 202,212 154,194 136,236 108,196 64,228 74,178 22,182 56,140 12,114 60,92 34,46 84,58" fill="#D80018" stroke="#070709" stroke-width="6"/>
+  <polygon points="120,18 142,50 182,30 175,72 216,78 188,110 220,142 176,154 190,196 150,182 134,218 110,184 72,210 80,168 36,170 66,136 28,114 70,96 48,56 90,66" fill="#070709" stroke="#F7F5F0" stroke-width="4"/>
+  <!-- Top Hat Silhouette -->
+  <path d="M58 102 L72 44 L168 36 L176 98 Z" fill="#F7F5F0" stroke="#070709" stroke-width="5"/>
+  <path d="M68 88 L173 82 L175 96 L65 102 Z" fill="#D80018"/>
+  <!-- Hat Brim -->
+  <path d="M28 108 Q120 84 212 102 Q120 122 28 108 Z" fill="#F7F5F0" stroke="#070709" stroke-width="6"/>
+  <!-- Domino Mask -->
+  <path d="M42 122 L120 134 L198 116 L210 148 L158 176 L120 156 L82 180 L32 152 Z" fill="#F7F5F0" stroke="#070709" stroke-width="6"/>
+  <!-- Mask Eye Cutouts (Sharp P5 Crimson Eyes) -->
+  <polygon points="62,138 106,142 96,158 58,150" fill="#D80018" stroke="#070709" stroke-width="4"/>
+  <polygon points="178,132 134,140 144,156 182,146" fill="#D80018" stroke="#070709" stroke-width="4"/>
+  <!-- Eye Glint Stars -->
+  <polygon points="82,132 85,144 97,146 85,149 82,162 79,149 67,146 79,144" fill="#FFE600"/>
+  <polygon points="158,128 161,140 173,142 161,145 158,158 155,145 143,142 155,140" fill="#FFE600"/>
+  <!-- Lower Collar / Banner Spike -->
+  <polygon points="86,184 120,224 154,180 120,194" fill="#D80018" stroke="#F7F5F0" stroke-width="4"/>
+</svg>

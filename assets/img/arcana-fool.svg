@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 420" fill="none">
+  <!-- Tarot Card Frame: 0 - THE FOOL (Le Mat / P5 Arcana Style) -->
+  <rect x="8" y="8" width="264" height="404" fill="#070709" stroke="#F7F5F0" stroke-width="6"/>
+  <rect x="18" y="18" width="244" height="384" fill="#D80018" stroke="#070709" stroke-width="4"/>
+  <!-- Inner Cutout Geometric Frame -->
+  <polygon points="30,34 250,28 244,348 34,354" fill="#070709" stroke="#F7F5F0" stroke-width="4"/>
+  <!-- Roman Numeral Zero Header -->
+  <polygon points="96,12 184,10 176,50 104,52" fill="#F7F5F0" stroke="#070709" stroke-width="4"/>
+  <text x="140" y="40" text-anchor="middle" font-family="Impact, Anton, sans-serif" font-size="28" fill="#070709" letter-spacing="3">0</text>
+  <!-- Abstract Woodcut Graphic of The Trickster / Fool -->
+  <circle cx="140" cy="145" r="68" fill="#D80018" stroke="#F7F5F0" stroke-width="4"/>
+  <!-- Sunburst Rays -->
+  <polygon points="140,60 152,95 188,82 164,114 202,126 166,142 192,174 154,164 158,204 140,172 122,204 126,164 88,174 114,142 78,126 116,114 92,82 128,95" fill="#FFE600" stroke="#070709" stroke-width="3"/>
+  <!-- Jester / Mask Silhouette -->
+  <polygon points="92,132 140,148 188,128 196,158 156,182 140,166 124,184 84,160" fill="#F7F5F0" stroke="#070709" stroke-width="5"/>
+  <polygon points="106,144 130,148 122,160" fill="#070709"/>
+  <polygon points="174,140 150,146 158,158" fill="#070709"/>
+  <!-- Cliff & Chains -->
+  <polygon points="34,290 128,236 162,268 246,216 244,348 34,354" fill="#F7F5F0" stroke="#070709" stroke-width="5"/>
+  <polygon points="48,308 122,258 158,288 238,242 238,344 42,348" fill="#070709"/>
+  <!-- Bottom Arcana Nameplate -->
+  <polygon points="24,358 256,350 250,396 30,400" fill="#F7F5F0" stroke="#070709" stroke-width="5"/>
+  <text x="140" y="384" text-anchor="middle" font-family="Impact, Anton, sans-serif" font-size="24" fill="#070709" letter-spacing="4">THE FOOL</text>
+</svg>

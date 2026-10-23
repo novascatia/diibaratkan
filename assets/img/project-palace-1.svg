@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" fill="none">
+  <!-- Project 1 Thumbnail: Cognitive Palace Web Engine -->
+  <rect width="600" height="360" fill="#070709"/>
+  <!-- Concentric Calling Card Target Rings -->
+  <circle cx="300" cy="180" r="260" fill="none" stroke="#D80018" stroke-width="22" stroke-dasharray="48 18"/>
+  <circle cx="300" cy="180" r="195" fill="none" stroke="#D80018" stroke-width="16"/>
+  <circle cx="300" cy="180" r="135" fill="#D80018" stroke="#F7F5F0" stroke-width="8"/>
+  <!-- Diagonal Comic Slash -->
+  <polygon points="-20,310 620,20 620,105 -20,380" fill="#070709" stroke="#F7F5F0" stroke-width="6"/>
+  <polygon points="0,320 600,40 600,85 0,360" fill="#D80018"/>
+  <!-- Stylized Crown / Treasure Icon -->
+  <polygon points="210,210 230,115 275,165 300,95 325,165 370,115 390,210" fill="#FFE600" stroke="#070709" stroke-width="8"/>
+  <rect x="215" y="216" width="170" height="26" fill="#F7F5F0" stroke="#070709" stroke-width="6"/>
+  <!-- Star Accents -->
+  <polygon points="110,80 122,108 152,110 128,128 136,158 110,140 84,158 92,128 68,110 98,108" fill="#F7F5F0" stroke="#070709" stroke-width="4"/>
+  <polygon points="490,220 500,242 524,244 505,258 512,282 490,268 468,282 475,258 456,244 480,242" fill="#FFE600" stroke="#070709" stroke-width="4"/>
+</svg>

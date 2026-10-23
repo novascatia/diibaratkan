@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" fill="none">
+  <!-- Project 4 Thumbnail: Phantom Chat / IM System -->
+  <rect width="600" height="360" fill="#D80018"/>
+  <!-- Comic Speech Lightning Trail -->
+  <polygon points="40,320 190,200 165,165 350,65 320,130 560,30 410,175 435,210 245,305 270,245" fill="#070709" stroke="#F7F5F0" stroke-width="7"/>
+  <!-- IM Chat Bubbles -->
+  <polygon points="75,60 325,42 305,142 155,148 115,182 122,146 65,142" fill="#F7F5F0" stroke="#070709" stroke-width="7"/>
+  <rect x="105" y="78" width="170" height="14" fill="#070709"/>
+  <rect x="105" y="104" width="120" height="14" fill="#D80018"/>
+  <polygon points="285,195 535,178 520,275 460,275 480,315 420,278 275,282" fill="#070709" stroke="#F7F5F0" stroke-width="7"/>
+  <rect x="315" y="214" width="180" height="14" fill="#F7F5F0"/>
+  <rect x="315" y="240" width="135" height="14" fill="#FFE600"/>
+</svg>

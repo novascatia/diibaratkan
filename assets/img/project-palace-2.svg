@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" fill="none">
+  <!-- Project 2 Thumbnail: Mementos Neural Navigator (Oracle HUD) -->
+  <rect width="600" height="360" fill="#070709"/>
+  <!-- Perspective Grid Lines -->
+  <path d="M0,260 L600,260 M0,305 L600,305 M0,345 L600,345" stroke="#D80018" stroke-width="4"/>
+  <path d="M300,150 L-80,360 M300,150 L80,360 M300,150 L220,360 M300,150 L380,360 M300,150 L520,360 M300,150 L680,360" stroke="#D80018" stroke-width="3"/>
+  <!-- Jagged Radar Window -->
+  <polygon points="85,35 525,22 495,295 105,310" fill="#070709" stroke="#F7F5F0" stroke-width="7"/>
+  <polygon points="105,52 505,40 480,278 120,290" fill="#D80018" opacity="0.2"/>
+  <!-- Necronomicon / Oracle Eye Graphic -->
+  <polygon points="300,65 445,165 300,265 155,165" fill="#070709" stroke="#00E5FF" stroke-width="6"/>
+  <circle cx="300" cy="165" r="48" fill="#D80018" stroke="#F7F5F0" stroke-width="6"/>
+  <circle cx="300" cy="165" r="18" fill="#FFE600"/>
+  <!-- Code Brackets -->
+  <path d="M135,115 L105,165 L135,215" stroke="#F7F5F0" stroke-width="8" stroke-linecap="square"/>
+  <path d="M465,115 L495,165 L465,215" stroke="#F7F5F0" stroke-width="8" stroke-linecap="square"/>
+</svg>
