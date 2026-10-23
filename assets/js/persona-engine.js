@@ -699,7 +699,7 @@
 
   /** about.html: Outfit Mode Switch, Persona Compendium Tabs & Confidant Dialogue */
   function initAboutInteractions() {
-    // 1. Outfit Toggle (Metaverse Phantom Thief vs Shibuya Citizen)
+    // 1. Portrait Filter Toggle
     const switchBtn = document.getElementById('p5-outfit-toggle');
     const portraitWrap = document.getElementById('p5-portrait-wrap');
     const attireLabel = document.getElementById('p5-attire-status');
@@ -709,63 +709,49 @@
         const isShibuya = portraitWrap.classList.toggle('is-shibuya-mode');
         if (attireLabel) {
           attireLabel.textContent = isShibuya
-            ? 'ATTIRE: SHIBUYA CITIZEN // REAL WORLD'
-            : 'ATTIRE: PHANTOM THIEF // METAVERSE';
+            ? 'Creative Technologist // Monochrome'
+            : 'Creative Technologist';
         }
         switchBtn.textContent = isShibuya
-          ? 'ENTER METAVERSE FORM'
-          : 'SWITCH TO SHIBUYA MODE';
+          ? 'Restore Crimson Portrait'
+          : 'Toggle Monochrome Portrait';
       });
     }
 
-    // 2. Persona Compendium Tabs
+    // 2. Tech Stack Tabs
     const PERSONA_DATA = {
       arsene: {
-        affinities: { PHYS: 'STR', FIRE: 'NUL', ICE: '—', ELEC: 'RPL', WIND: '—', PSY: 'STR', NUKE: '—', CURSE: 'DR' },
         skills: [
-          { name: 'MEGIDOLAON.TS', sub: 'TypeScript / Next.js / React Architecture', cost: '38 SP' },
-          { name: 'EIGAON.CSS', sub: 'Custom WebGL, Canvas & CSS Keyframe Choreography', cost: '22 SP' },
-          { name: 'SUKUKAJA.UX', sub: '60FPS Motion Design & Micro-Interactions', cost: '15 SP' },
-          { name: 'REBEL SOUL', sub: 'Distinctive Non-Generic Frontend Direction', cost: 'PASSIVE' }
+          { name: 'Frontend Architecture', sub: 'TypeScript, React, Next.js & Modern CSS', cost: 'Core' },
+          { name: 'Motion & Interactive UI', sub: 'Canvas 2D, WebGL & Smooth Page Transitions', cost: 'Motion' },
+          { name: 'Design Systems', sub: 'Accessible, Responsive Component Libraries', cost: 'UI/UX' },
+          { name: 'Performance Tuning', sub: 'Core Web Vitals & 60FPS Rendering', cost: 'Speed' }
         ]
       },
       satanael: {
-        affinities: { PHYS: 'RPL', FIRE: 'DR', ICE: 'NUL', ELEC: 'NUL', WIND: 'STR', PSY: 'NUL', NUKE: 'RPL', CURSE: 'NUL' },
         skills: [
-          { name: 'SINFUL SHELL.API', sub: 'Distributed Node.js / Python / Go Microservices', cost: '64 SP' },
-          { name: 'HEAT RISER.DB', sub: 'PostgreSQL, Redis & High-Concurrency Caching', cost: '30 SP' },
-          { name: 'VICTORY CRY.OPS', sub: 'Docker, CI/CD Pipelines & Cloud Edge Deployments', cost: 'PASSIVE' },
-          { name: 'TYRANT MIND', sub: 'Zero-Downtime System Security & Auth', cost: 'PASSIVE' }
+          { name: 'API & Services', sub: 'Node.js, Python FastAPI & REST / GraphQL', cost: 'Backend' },
+          { name: 'Data & Storage', sub: 'PostgreSQL, Redis & Real-Time Sync', cost: 'Data' },
+          { name: 'Cloud & Deployment', sub: 'Docker, CI/CD Pipelines & Edge Hosting', cost: 'DevOps' },
+          { name: 'Security & Auth', sub: 'OAuth2, JWT & End-to-End Protection', cost: 'Auth' }
         ]
       },
       izanagi: {
-        affinities: { PHYS: 'NUL', FIRE: 'STR', ICE: 'STR', ELEC: 'DR', WIND: 'NUL', PSY: 'RPL', NUKE: 'STR', CURSE: 'NUL' },
         skills: [
-          { name: 'MYRIAD TRUTHS.AI', sub: 'LLM Agents, RAG Pipelines & Creative AI Tools', cost: '48 SP' },
-          { name: 'CONCENTRATE.SYS', sub: 'Clean Architecture & Domain-Driven Design', cost: '25 SP' },
-          { name: 'ANGELIC GRACE', sub: 'WCAG Accessibility & Cross-Device Responsiveness', cost: 'PASSIVE' },
-          { name: 'ALMIGHTY BOOST', sub: 'End-to-End Product Strategy & Prototyping', cost: 'PASSIVE' }
+          { name: 'AI & LLM Integration', sub: 'Agentic Workflows, RAG & Prompt Engineering', cost: 'AI' },
+          { name: 'System Design', sub: 'Clean Architecture & Modular Codebases', cost: 'Arch' },
+          { name: 'Cross-Platform Web', sub: 'Mobile-First Layouts & Progressive Web Apps', cost: 'Mobile' },
+          { name: 'Product Prototyping', sub: 'Rapid Concept-to-Production Execution', cost: 'Product' }
         ]
       }
     };
 
     const tabs = document.querySelectorAll('[data-persona-tab]');
-    const affinityContainer = document.getElementById('p5-affinity-strip');
     const skillsContainer = document.getElementById('p5-skill-slots');
 
     function renderPersona(key) {
       const p = PERSONA_DATA[key];
-      if (!p || !affinityContainer || !skillsContainer) return;
-
-      affinityContainer.innerHTML = Object.entries(p.affinities)
-        .map(
-          ([elem, val]) => `
-          <div class="p5-affinity-cell">
-            <span class="p5-affinity-elem">${elem}</span>
-            <span class="p5-affinity-val">${val}</span>
-          </div>`
-        )
-        .join('');
+      if (!p || !skillsContainer) return;
 
       skillsContainer.innerHTML = p.skills
         .map(
