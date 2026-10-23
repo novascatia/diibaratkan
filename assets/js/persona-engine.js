@@ -225,19 +225,22 @@
       node.classList.add('p5-ransom-word');
       node.setAttribute('aria-label', rawText);
 
-      Array.from(rawText).forEach((char) => {
-        if (char === ' ') {
-          const spacer = document.createElement('span');
-          spacer.style.width = '0.35em';
-          spacer.setAttribute('aria-hidden', 'true');
-          node.appendChild(spacer);
-          return;
-        }
-        const span = document.createElement('span');
-        span.className = 'p5-ransom-char';
-        span.textContent = char;
-        span.setAttribute('aria-hidden', 'true');
-        node.appendChild(span);
+      let charIndex = 0;
+      const words = rawText.split(/\s+/);
+      words.forEach((word) => {
+        const wordGroup = document.createElement('span');
+        wordGroup.className = 'p5-ransom-group';
+        wordGroup.setAttribute('aria-hidden', 'true');
+
+        Array.from(word).forEach((char) => {
+          const span = document.createElement('span');
+          span.className = `p5-ransom-char p5-ransom-char--${(charIndex % 4) + 1}`;
+          span.textContent = char;
+          wordGroup.appendChild(span);
+          charIndex += 1;
+        });
+
+        node.appendChild(wordGroup);
       });
     });
   }
@@ -259,17 +262,23 @@
         sessionStorage.removeItem(STORAGE_KEY_TRANSITION);
         if (labelEl && parsed.label) labelEl.textContent = parsed.label;
         if (subEl && parsed.sub) subEl.textContent = parsed.sub;
+        stage.classList.add('is-active', 'is-closing');
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            stage.classList.remove('is-closing');
+            stage.classList.remove('is-active');
+          }, 80);
+        });
+      } else {
+        stage.classList.remove('is-closing', 'is-active');
       }
     } catch (_) {
-      // Ignore storage errors
+      stage.classList.remove('is-closing', 'is-active');
     }
 
-    // Play opening reveal animation (blades slide open to unveil page)
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        stage.classList.remove('is-closing');
-        stage.classList.remove('is-active');
-      }, 90);
+    // Ensure mobile Back/Forward cache (bfcache) never leaves transition blades layered on screen
+    window.addEventListener('pageshow', () => {
+      stage.classList.remove('is-closing', 'is-active');
     });
 
     // Intercept links to index.html, about.html, project.html
