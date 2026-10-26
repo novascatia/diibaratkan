@@ -1,0 +1,408 @@
+/* ==========================================================================
+   RAMA'S MINIMALIST PORTFOLIO & BIOGRAPHY (ramaram.my.id style)
+   Simple, clean, fast dark mode with full-screen gate transitions (like before).
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: #0d0d0d;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #0d0d0d;
+  color: #999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   CINEMATIC FULL-SCREEN GATE TRANSITION (LIKE BEFORE)
+   Dual top & bottom shutters that slam shut on click and slide apart on enter.
+   ========================================================================== */
+
+.page-transition-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-transition-stage.is-active {
+  pointer-events: all;
+}
+
+.transition-gate {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 52vh;
+  background: #0d0d0d;
+  transition: transform 0.48s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+  z-index: 1;
+}
+
+.transition-gate--top {
+  top: 0;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.95);
+  transform: translateY(-105%);
+}
+
+.transition-gate--bottom {
+  bottom: 0;
+  top: auto;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.95);
+  transform: translateY(105%);
+}
+
+.page-transition-stage.is-closing .transition-gate--top,
+.page-transition-stage.is-closing .transition-gate--bottom {
+  transform: translateY(0%);
+}
+
+.transition-banner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.page-transition-stage.is-closing .transition-banner {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.transition-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: #777;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.transition-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #f1f1f1;
+  margin-bottom: 18px;
+}
+
+.transition-bar-track {
+  width: 180px;
+  max-width: 60vw;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.transition-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: #f1f1f1;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  transition: width 0.44s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-transition-stage.is-closing .transition-bar-fill {
+  width: 100%;
+}
+
+/* ==========================================================================
+   STICKY BLURRED NAVIGATION (Hides on scroll down, shows on scroll up)
+   ========================================================================== */
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.navcontent {
+  width: 100%;
+  max-width: 580px;
+  padding: 0 24px;
+  display: flex;
+  gap: 20px;
+}
+
+nav a {
+  color: #777;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+nav a:hover,
+nav a.active {
+  color: #f1f1f1;
+}
+
+.navhidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* ==========================================================================
+   MAIN CONTENT CONTAINER
+   ========================================================================== */
+
+.container {
+  padding: 130px 24px 80px;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 150px 0 100px;
+  }
+  .navcontent {
+    padding: 0;
+  }
+}
+
+/* ==========================================================================
+   STAGGERED ELEMENT REVEAL
+   ========================================================================== */
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: staggerReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes staggerReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation-delay: 0.08s; }
+.stagger-2 { animation-delay: 0.14s; }
+.stagger-3 { animation-delay: 0.20s; }
+.stagger-4 { animation-delay: 0.26s; }
+.stagger-5 { animation-delay: 0.32s; }
+.stagger-6 { animation-delay: 0.38s; }
+.stagger-7 { animation-delay: 0.44s; }
+.stagger-8 { animation-delay: 0.50s; }
+
+/* ==========================================================================
+   TYPOGRAPHY & TAGS
+   ========================================================================== */
+
+.hero-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #666;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.hero-tag:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #888;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #f1f1f1;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.url {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 45px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+p {
+  margin-bottom: 28px;
+  color: #aaa;
+}
+
+p:last-of-type {
+  margin-bottom: 28px;
+}
+
+a {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+a:hover {
+  color: #f1f1f1;
+}
+
+.content-highlight {
+  color: #ccc;
+  transition: color 0.25s ease;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 40px 0;
+}
+
+/* ==========================================================================
+   FOOTER TEXT LINKS (Smooth expanding underline on hover)
+   ========================================================================== */
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.links a {
+  color: #666;
+  width: fit-content;
+  position: relative;
+  transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #f1f1f1;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.links a:hover::after {
+  width: 100%;
+}
+
+.links a:hover {
+  color: #f1f1f1;
+}
+
+/* ==========================================================================
+   PROJECTS PAGE STYLES (for project.html)
+   ========================================================================== */
+
+.project-item {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 28px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  transition: 
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-item:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.028);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+}
+
+.project-item h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #f1f1f1;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.project-lang {
+  color: #666;
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+}
+
+.project-item p {
+  margin-bottom: 10px;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.project-item p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   REDUCED MOTION ACCESSIBILITY
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .transition-gate {
+    display: none !important;
+  }
+  .transition-banner {
+    display: none !important;
+  }
+  .stagger-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
