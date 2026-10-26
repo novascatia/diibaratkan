@@ -3,69 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About — diibaratkan.my.id (Main Page)</title>
-  <meta name="description" content="Main profile page for diibaratkan.my.id — Developer overview, core strengths, technical stack, and interactive Q&A." />
-  <link rel="icon" type="image/svg+xml" href="assets/img/phantom-logo.svg" />
+  <title>Hero Profile — diibaratkan.my.id (Main Page)</title>
+  <meta name="description" content="Main Hero Mastery & Developer Profile page for diibaratkan.my.id — Battlefield Radar, Emblem Tech Loadout, and Voice Lines." />
+  <link rel="icon" type="image/svg+xml" href="assets/img/mlbb-mythic-crest.svg" />
   <link rel="stylesheet" href="assets/css/persona5.css" />
 </head>
 <body data-page="about">
 
-  <!-- Subtle Ambient Background -->
+  <!-- Ambient Celestial Sanctuary Background -->
   <div class="p5-bg-stack" aria-hidden="true">
     <div class="p5-bg-art"></div>
     <div class="p5-bg-vignette"></div>
   </div>
   <canvas id="p5-metaverse-canvas" aria-hidden="true"></canvas>
 
-  <!-- Page-to-Page Animated Diagonal Transition Stage -->
+  <!-- MLBB Match Found / Loading Screen Gate Transition -->
   <div id="p5-transition-stage" class="p5-transition-stage" aria-hidden="true">
     <div class="p5-slash-blade p5-slash-blade--1"></div>
     <div class="p5-slash-blade p5-slash-blade--2"></div>
-    <div class="p5-slash-blade p5-slash-blade--3"></div>
-    <div class="p5-slash-blade p5-slash-blade--4"></div>
     <div class="p5-transition-banner">
-      <img src="assets/img/phantom-logo.svg" alt="" class="p5-transition-crest" />
-      <div id="p5-transition-label" class="p5-transition-label">ABOUT &amp; PROFILE</div>
+      <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Emblem" class="p5-transition-crest" />
+      <div id="p5-transition-label" class="p5-transition-label">LOADING HERO MASTERY</div>
       <div id="p5-transition-sub" class="p5-transition-sub">MAIN PAGE // ABOUT.HTML</div>
+      <div class="mlbb-loading-bar-wrap">
+        <div class="mlbb-loading-bar-fill"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Clean Top Navigation Bar -->
+  <!-- Top Celestial Lobby Header -->
   <header class="p5-hud-header">
     <div class="p5-header-inner">
       <div style="display: flex; align-items: center; gap: 14px;">
         <a href="index.html"
            class="p5-brand-link"
            data-p5-transition
-           data-transition-title="INTRO PORTAL"
-           data-transition-sub="DIIBARATKAN.MY.ID // INDEX.HTML">
-          <img src="assets/img/phantom-logo.svg" alt="" class="p5-brand-logo" />
+           data-transition-title="ENTERING CELESTIAL LOBBY"
+           data-transition-sub="LOBBY // INDEX.HTML">
+          <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Emblem" class="p5-brand-logo" />
           <span class="p5-brand-name">diibaratkan.my.id</span>
         </a>
-        <span class="p5-date-pill"><strong>MAIN PAGE</strong> • PROFILE</span>
+        <span class="p5-date-pill">
+          <span class="mlbb-ping-dot" aria-hidden="true"></span>
+          <strong>HERO MASTERY</strong> • RANKED PROFILE
+        </span>
       </div>
 
-      <nav class="p5-baton-nav" aria-label="Primary Navigation">
+      <nav class="p5-baton-nav" aria-label="Lobby Navigation">
         <a href="index.html"
            class="p5-nav-link"
            data-p5-transition
-           data-transition-title="INTRO PORTAL"
-           data-transition-sub="INDEX.HTML">
-          Intro
+           data-transition-title="CELESTIAL LOBBY"
+           data-transition-sub="LOBBY // INDEX.HTML">
+          Lobby
         </a>
         <a href="about.html"
            class="p5-nav-link is-active"
            data-p5-transition
-           data-transition-title="ABOUT &amp; PROFILE"
+           data-transition-title="LOADING HERO MASTERY"
            data-transition-sub="MAIN PAGE // ABOUT.HTML">
-          About
+          Hero Profile
         </a>
         <a href="project.html"
            class="p5-nav-link"
            data-p5-transition
-           data-transition-title="SELECTED PROJECTS"
-           data-transition-sub="ARCHIVE // PROJECT.HTML">
-          Projects
+           data-transition-title="ENTERING LAND OF DAWN"
+           data-transition-sub="TACTICAL MAP // PROJECT.HTML">
+          Land of Dawn Map
         </a>
       </nav>
     </div>
@@ -75,31 +79,31 @@
   <main class="p5-page-shell">
 
     <div style="margin-bottom: 40px;">
-      <div class="p5-eyebrow">01 — Main Profile</div>
-      <h1 class="p5-display-title">About <span class="accent">diibaratkan</span></h1>
+      <div class="p5-eyebrow">01 — Hero Mastery &amp; Overview</div>
+      <h1 class="p5-display-title">Hero Profile: <span class="accent">diibaratkan</span></h1>
       <p class="p5-lead-text" style="margin-bottom: 0;">
-        A placeholder developer &amp; creative technologist profile designed with generous breathing room, crisp typography, and subtle Persona-inspired flair.
+        Main profile dossier for <strong>diibaratkan.my.id</strong> — combining clean developer capabilities with a subtle Mobile Legends: Bang Bang Celestial theme.
       </p>
     </div>
 
     <div class="p5-about-grid">
 
-      <!-- Left Column: Clean Profile Sidebar -->
-      <aside class="p5-profile-sidebar" aria-label="Profile Summary">
+      <!-- Left Sidebar: Hero Card -->
+      <aside class="p5-profile-sidebar" aria-label="Hero Summary">
         <div id="p5-portrait-wrap" class="p5-portrait-box">
-          <img src="assets/img/protagonist-cutout.png" alt="Portrait for diibaratkan.my.id" />
+          <img src="assets/img/mlbb-hero-portrait.jpg" alt="Hero Portrait for diibaratkan.my.id" />
         </div>
 
         <div class="p5-profile-meta">
-          <div id="p5-attire-status" class="p5-profile-role">Creative Technologist</div>
+          <div id="p5-attire-status" class="p5-profile-role">Mage / Architect // Mythical Immortal</div>
           <h2 class="p5-profile-name">diibaratkan</h2>
           <p class="p5-profile-bio">
-            Building expressive web interfaces, resilient backend services, and thoughtful digital products.
+            Specializes in high-ground system architecture, responsive web craftsmanship, and smooth interactive execution.
           </p>
         </div>
 
         <button type="button" id="p5-outfit-toggle" class="p5-subtle-btn" style="margin-bottom: 12px;">
-          Toggle Monochrome Portrait
+          Preview Astral Collector Aura
         </button>
 
         <div style="display: flex; gap: 10px; margin-top: 8px;">
@@ -107,157 +111,158 @@
              class="p5-btn p5-btn--primary"
              style="flex: 1;"
              data-p5-transition
-             data-transition-title="SELECTED PROJECTS"
-             data-transition-sub="ARCHIVE // PROJECT.HTML">
-            View Projects →
+             data-transition-title="ENTERING LAND OF DAWN"
+             data-transition-sub="TACTICAL MAP // PROJECT.HTML">
+            Open Land of Dawn Map →
           </a>
         </div>
       </aside>
 
-      <!-- Right Column: Spacious Content Cards -->
+      <!-- Right Column: Spacious Profile Sections -->
       <div class="p5-about-main">
 
-        <!-- 1. Core Strengths & Radar -->
+        <!-- 1. Battlefield Radar & Core Attributes -->
         <section class="p5-card-section" aria-labelledby="p5-params-title">
           <div class="p5-section-header">
-            <h2 id="p5-params-title" class="p5-section-title">Core Strengths &amp; Focus</h2>
-            <span class="p5-section-tag">Disciplines Overview</span>
+            <h2 id="p5-params-title" class="p5-section-title">Battlefield Attributes &amp; Radar</h2>
+            <span class="p5-section-tag">Win Rate: 92.4% // Mastery Max</span>
           </div>
 
           <div class="p5-stats-split">
-            <svg class="p5-radar-svg" viewBox="0 0 260 260" role="img" aria-label="Five-point competency radar chart">
-              <polygon points="130,22 232,96 193,216 67,216 28,96" fill="#0A0A0E" stroke="rgba(245,244,240,0.22)" stroke-width="1.5" />
-              <polygon points="130,56 200,107 173,190 87,190 60,107" fill="none" stroke="rgba(245,244,240,0.1)" stroke-width="1" stroke-dasharray="3 3" />
-              <line x1="130" y1="130" x2="130" y2="22" stroke="rgba(216,0,24,0.4)" stroke-width="1" />
-              <line x1="130" y1="130" x2="232" y2="96" stroke="rgba(216,0,24,0.4)" stroke-width="1" />
-              <line x1="130" y1="130" x2="193" y2="216" stroke="rgba(216,0,24,0.4)" stroke-width="1" />
-              <line x1="130" y1="130" x2="67" y2="216" stroke="rgba(216,0,24,0.4)" stroke-width="1" />
-              <line x1="130" y1="130" x2="28" y2="96" stroke="rgba(216,0,24,0.4)" stroke-width="1" />
-              <polygon points="130,30 220,100 184,206 76,206 40,100"
-                       fill="rgba(216, 0, 24, 0.24)"
-                       stroke="#D80018"
+            <!-- Custom SVG MLBB 5-Point Attribute Radar -->
+            <svg class="p5-radar-svg" viewBox="0 0 260 260" role="img" aria-label="Five-point Hero Attribute Radar">
+              <polygon points="130,22 232,96 193,216 67,216 28,96" fill="#070B14" stroke="rgba(229,184,91,0.35)" stroke-width="1.5" />
+              <polygon points="130,56 200,107 173,190 87,190 60,107" fill="none" stroke="rgba(0,212,255,0.18)" stroke-width="1" stroke-dasharray="3 3" />
+              <line x1="130" y1="130" x2="130" y2="22" stroke="rgba(229,184,91,0.3)" stroke-width="1" />
+              <line x1="130" y1="130" x2="232" y2="96" stroke="rgba(229,184,91,0.3)" stroke-width="1" />
+              <line x1="130" y1="130" x2="193" y2="216" stroke="rgba(229,184,91,0.3)" stroke-width="1" />
+              <line x1="130" y1="130" x2="67" y2="216" stroke="rgba(229,184,91,0.3)" stroke-width="1" />
+              <line x1="130" y1="130" x2="28" y2="96" stroke="rgba(229,184,91,0.3)" stroke-width="1" />
+              <polygon points="130,28 224,99 186,208 74,208 36,99"
+                       fill="rgba(0, 212, 255, 0.22)"
+                       stroke="#E5B85B"
                        stroke-width="2.5" />
-              <circle cx="130" cy="130" r="4" fill="#FFD600" />
-              <text x="130" y="14" text-anchor="middle" fill="#F5F4F0" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="11">Architecture</text>
-              <text x="248" y="94" text-anchor="end" fill="#A6A5B0" font-family="Space Grotesk, sans-serif" font-size="11">UI Design</text>
-              <text x="205" y="236" text-anchor="middle" fill="#A6A5B0" font-family="Space Grotesk, sans-serif" font-size="11">Collaboration</text>
-              <text x="55" y="236" text-anchor="middle" fill="#A6A5B0" font-family="Space Grotesk, sans-serif" font-size="11">Engineering</text>
-              <text x="12" y="94" text-anchor="start" fill="#A6A5B0" font-family="Space Grotesk, sans-serif" font-size="11">Problem Solving</text>
+              <circle cx="130" cy="130" r="4" fill="#00D4FF" />
+              <text x="130" y="14" text-anchor="middle" fill="#FFE89E" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="11">Architecture</text>
+              <text x="250" y="94" text-anchor="end" fill="#9BA8C7" font-family="Space Grotesk, sans-serif" font-size="11">UI Polish</text>
+              <text x="205" y="236" text-anchor="middle" fill="#9BA8C7" font-family="Space Grotesk, sans-serif" font-size="11">Teamfight</text>
+              <text x="55" y="236" text-anchor="middle" fill="#9BA8C7" font-family="Space Grotesk, sans-serif" font-size="11">Execution</text>
+              <text x="10" y="94" text-anchor="start" fill="#9BA8C7" font-family="Space Grotesk, sans-serif" font-size="11">Durability</text>
             </svg>
 
             <div class="p5-param-list">
               <div class="p5-param-item">
                 <div class="p5-param-head">
-                  <span>Architecture</span>
-                  <span class="p5-param-rank">01</span>
+                  <span>Scaling &amp; Architecture</span>
+                  <span class="p5-param-rank">S+ Tier</span>
                 </div>
-                <p class="p5-param-desc">Scalable full-stack structure, clean APIs, and maintainable patterns.</p>
+                <p class="p5-param-desc">Clean modular systems built to scale smoothly from early game to late game.</p>
               </div>
               <div class="p5-param-item">
                 <div class="p5-param-head">
-                  <span>Engineering</span>
-                  <span class="p5-param-rank">02</span>
+                  <span>Precision Execution</span>
+                  <span class="p5-param-rank">S+ Tier</span>
                 </div>
-                <p class="p5-param-desc">TypeScript, Python, and high-performance frontend execution.</p>
+                <p class="p5-param-desc">TypeScript, Python, and responsive frontend code with zero wasted frames.</p>
               </div>
               <div class="p5-param-item">
                 <div class="p5-param-head">
-                  <span>UI &amp; Motion</span>
-                  <span class="p5-param-rank">03</span>
+                  <span>UI &amp; Visual Polish</span>
+                  <span class="p5-param-rank">S Tier</span>
                 </div>
-                <p class="p5-param-desc">Intentional typography, smooth transitions, and responsive layouts.</p>
+                <p class="p5-param-desc">Intentional typography, smooth loading transitions, and intuitive layouts.</p>
               </div>
               <div class="p5-param-item">
                 <div class="p5-param-head">
-                  <span>Problem Solving</span>
-                  <span class="p5-param-rank">04</span>
+                  <span>Teamfight &amp; Delivery</span>
+                  <span class="p5-param-rank">S+ Tier</span>
                 </div>
-                <p class="p5-param-desc">Turning complex product requirements into simple, fast interfaces.</p>
+                <p class="p5-param-desc">Clear communication, reliable git workflows, and on-time objective completion.</p>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 2. Technical Stack -->
+        <!-- 2. Emblem & Build Loadout (Tech Stack) -->
         <section class="p5-card-section" aria-labelledby="p5-compendium-title">
           <div class="p5-section-header">
-            <h2 id="p5-compendium-title" class="p5-section-title">Technical Stack</h2>
-            <span class="p5-section-tag">Select a domain to inspect</span>
+            <h2 id="p5-compendium-title" class="p5-section-title">Emblem &amp; Tech Loadout</h2>
+            <span class="p5-section-tag">Switch active Emblem set</span>
           </div>
 
-          <div class="p5-compendium-tabs" role="tablist" aria-label="Technical Stack Domains">
+          <div class="p5-compendium-tabs" role="tablist" aria-label="Emblem Tech Loadouts">
             <button type="button" class="p5-persona-tab is-active" data-persona-tab="arsene">
-              Frontend &amp; UI
+              ✦ Mage Emblem (Frontend &amp; UI)
             </button>
             <button type="button" class="p5-persona-tab" data-persona-tab="satanael">
-              Backend &amp; Cloud
+              ⚔ Assassin Emblem (Backend &amp; APIs)
             </button>
             <button type="button" class="p5-persona-tab" data-persona-tab="izanagi">
-              AI &amp; Product Architecture
+              🛡 Support Emblem (AI &amp; Cloud)
             </button>
           </div>
 
           <div id="p5-skill-slots" class="p5-skill-slots">
             <div class="p5-skill-card">
               <div>
-                <span class="p5-skill-name">Frontend Architecture</span>
-                <span class="p5-skill-sub">TypeScript, React, Next.js &amp; Modern CSS</span>
+                <span class="p5-skill-name">Arcane Frontend Mastery</span>
+                <span class="p5-skill-sub">TypeScript, React, Next.js &amp; Modern CSS Grid</span>
               </div>
-              <span class="p5-skill-cost">Core</span>
+              <span class="p5-skill-cost">Mage T3</span>
             </div>
             <div class="p5-skill-card">
               <div>
-                <span class="p5-skill-name">Motion &amp; Interactive UI</span>
-                <span class="p5-skill-sub">Canvas 2D, WebGL &amp; Smooth Page Transitions</span>
+                <span class="p5-skill-name">Celestial Motion &amp; Canvas</span>
+                <span class="p5-skill-sub">60FPS Transitions, WebGL &amp; Interactive SVG</span>
               </div>
-              <span class="p5-skill-cost">Motion</span>
+              <span class="p5-skill-cost">Agility</span>
             </div>
             <div class="p5-skill-card">
               <div>
-                <span class="p5-skill-name">Design Systems</span>
-                <span class="p5-skill-sub">Accessible, Responsive Component Libraries</span>
+                <span class="p5-skill-name">Design System Harmony</span>
+                <span class="p5-skill-sub">Accessible, Mobile-First Component Architecture</span>
               </div>
-              <span class="p5-skill-cost">UI/UX</span>
+              <span class="p5-skill-cost">Mastery</span>
             </div>
             <div class="p5-skill-card">
               <div>
-                <span class="p5-skill-name">Performance Tuning</span>
-                <span class="p5-skill-sub">Core Web Vitals &amp; 60FPS Rendering</span>
+                <span class="p5-skill-name">Mana Flow Optimization</span>
+                <span class="p5-skill-sub">Instant Load Times &amp; Core Web Vitals Tuning</span>
               </div>
-              <span class="p5-skill-cost">Speed</span>
+              <span class="p5-skill-cost">Passive</span>
             </div>
           </div>
         </section>
 
-        <!-- 3. Interactive Q&A -->
-        <section class="p5-card-section" aria-label="Interactive Q&A">
+        <!-- 3. Hero Voice Lines / Quick Chat -->
+        <section class="p5-card-section" aria-label="Hero Voice Lines and Q&A">
           <div class="p5-section-header">
-            <h2 class="p5-section-title">Quick Q&amp;A</h2>
+            <h2 class="p5-section-title">Quick Chat &amp; Voice Lines</h2>
             <span class="p5-section-tag">Interactive Prompt</span>
           </div>
 
           <p id="p5-dialogue-text" class="p5-dialogue-text">
-            "Welcome to the main profile page of diibaratkan.my.id. All text here is clean placeholder content ready for your personal bio. Click a question below to learn more."
+            "All systems in the Celestial Sanctuary are online. Select a Quick Chat signal below to hear more about how diibaratkan.my.id approaches engineering and design."
           </p>
 
           <div class="p5-dialogue-choices">
             <button type="button"
                     class="p5-choice-btn"
-                    data-dialogue-reply="&quot;I focus on building web applications that feel effortless to use while keeping a memorable visual identity — balancing clean layout structure with subtle motion.&quot;">
-              What is your design &amp; engineering approach?
+                    data-dialogue-reply="&quot;[Launch Attack!] I build web experiences that combine fast, clean engineering with memorable visual polish — never cramped, always responsive.&quot;">
+              🔊 &quot;Launch Attack! — What is your engineering philosophy?&quot;
             </button>
             <button type="button"
                     class="p5-choice-btn"
-                    data-dialogue-reply="&quot;From interactive frontend experiences to backend APIs and AI tooling, I enjoy taking products from early concept all the way to deployment.&quot;">
-              What kind of projects do you work on?
+                    data-dialogue-reply="&quot;[Gather for Teamfight!] From full-stack web apps to real-time dashboards and interactive interfaces, I love shipping high-impact products.&quot;">
+              🔊 &quot;Gather for Teamfight! — What projects do you build?&quot;
             </button>
             <a href="project.html"
                class="p5-choice-btn"
-               style="color: var(--text-primary); border-color: var(--accent-crimson);"
+               style="color: var(--accent-gold-bright); border-color: var(--accent-gold);"
                data-p5-transition
-               data-transition-title="SELECTED PROJECTS"
-               data-transition-sub="ARCHIVE // PROJECT.HTML">
-              Explore Featured Projects →
+               data-transition-title="ENTERING LAND OF DAWN"
+               data-transition-sub="TACTICAL MAP // PROJECT.HTML">
+              Open Land of Dawn Map (project.html) →
             </a>
           </div>
         </section>
@@ -266,19 +271,19 @@
     </div>
   </main>
 
-  <!-- Sleek Audio Player (Leblanc Radio) -->
-  <aside id="p5-jukebox" class="p5-jukebox" aria-label="Background Music Player">
+  <!-- Sleek Bottom Audio Player (Land of Dawn Radio) -->
+  <aside id="p5-jukebox" class="p5-jukebox" aria-label="Lobby Soundtrack Player">
     <div id="p5-vinyl-disc" class="p5-vinyl-disc" aria-hidden="true"></div>
     <div class="p5-jukebox-info">
       <div class="p5-jukebox-kicker">
-        <span>SOUNDTRACK</span>
+        <span>LOBBY SOUNDTRACK</span>
         <span class="p5-eq-bars" aria-hidden="true">
           <span class="p5-eq-bar"></span>
           <span class="p5-eq-bar"></span>
           <span class="p5-eq-bar"></span>
         </span>
       </div>
-      <select id="p5-track-select" class="p5-track-select" aria-label="Select Soundtrack"></select>
+      <select id="p5-track-select" class="p5-track-select" aria-label="Select MLBB Track"></select>
     </div>
     <div class="p5-jukebox-controls">
       <button type="button" id="p5-audio-toggle" class="p5-audio-btn">PLAY BGM</button>

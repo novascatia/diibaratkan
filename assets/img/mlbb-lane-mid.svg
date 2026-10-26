@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" fill="none">
+  <rect width="600" height="360" fill="#080E1E"/>
+  <!-- Mid Lane Arcane Telemetry Grid -->
+  <path d="M0,280 L600,280 M0,320 L600,320" stroke="#00D4FF" stroke-opacity="0.25" stroke-width="2"/>
+  <polygon points="300,42 430,180 300,318 170,180" fill="#0F1B36" stroke="#E5B85B" stroke-width="4"/>
+  <polygon points="300,76 396,180 300,284 204,180" fill="none" stroke="#00D4FF" stroke-width="3" stroke-dasharray="10 6"/>
+  <circle cx="300" cy="180" r="52" fill="#00D4FF" fill-opacity="0.2" stroke="#7AF7FF" stroke-width="3"/>
+  <polygon points="300,136 314,166 344,180 314,194 300,224 286,194 256,180 286,166" fill="#FFE89E"/>
+</svg>

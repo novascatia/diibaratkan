@@ -1,79 +1,64 @@
 /**
- * @fileoverview Persona 5 Royal Interactive Engine for diibaratkan.my.id
+ * @fileoverview Mobile Legends: Bang Bang (MLBB) Celestial Interactive Engine for diibaratkan.my.id
  * Handles:
- * - Page-to-page Calling Card / Diagonal Slash transitions between index.html, about.html, project.html
- * - Persistent Velvet Room / Leblanc BGM Jukebox (Local P5R MP3s + Archive.org streams + session state)
- * - Web Audio API synthesized Persona 5 UI Sound Effects (Menu Hover, Dagger Confirm, Transition Slash, All-Out Attack)
- * - Interactive Metaverse Canvas (Hypnotic rings, floating comic stars, click slash bursts)
- * - Page-specific interactivity (Calling Card modal, Compendium tabs, Confidant dialogue, All-Out Attack modal)
+ * - MLBB "Match Found / Entering Land of Dawn" Loading Screen Gate transitions between index.html, about.html, project.html
+ * - Persistent Land of Dawn BGM Player (Local MLBB MP3s + cross-page session state)
+ * - Web Audio API synthesized MLBB UI Sound Effects (Mana Hover, Mythic Confirm, Match Found Gate, Victory Chime)
+ * - Ambient Celestial Mana Particles & Click Ripple Canvas
+ * - Page-specific interactivity (Matchmaking Queue modal, Emblem Loadout tabs, Quick Chat, Interactive Land of Dawn Map)
  */
 
 (() => {
   'use strict';
 
-  const STORAGE_KEY_AUDIO = 'p5_diibaratkan_audio_state_v1';
-  const STORAGE_KEY_TRANSITION = 'p5_diibaratkan_transition_v1';
+  const STORAGE_KEY_AUDIO = 'mlbb_diibaratkan_audio_state_v1';
+  const STORAGE_KEY_TRANSITION = 'mlbb_diibaratkan_transition_v1';
 
   /**
-   * Official Persona 5 / Persona 5 Royal Tracklist
-   * Prioritizes local fast-loading MP3s in assets/audio/ with remote Archive.org fallback
+   * Official Mobile Legends: Bang Bang (MLBB) & Bonus Tracklist
    */
-  const P5_PLAYLIST = [
+  const MLBB_PLAYLIST = [
     {
-      id: 'colors-flying-high',
-      title: 'Colors Flying High (P5R Opening)',
-      src: 'assets/audio/colors-flying-high.mp3',
-      fallback: 'https://archive.org/download/persona-5-royal-ost/1-01%20Colors%20Flying%20High%20%28Opening%20Movie%20Version%29.mp3',
+      id: 'mlbb-welcome-lobby',
+      title: 'Welcome to Mobile Legends (Lobby Theme)',
+      src: 'assets/audio/mlbb-welcome-lobby.mp3',
+      fallback: 'assets/audio/mlbb-seasonal-theme.mp3',
       defaultPage: 'index'
     },
     {
-      id: 'no-more-what-ifs',
-      title: 'No More What Ifs (Leblanc Jazz)',
-      src: 'assets/audio/no-more-what-ifs.mp3',
-      fallback: 'https://archive.org/download/persona-5-royal-ost/1-08%20No%20More%20What%20Ifs.mp3',
+      id: 'mlbb-piano-theme',
+      title: 'Dawn Sanctuary (Hero Mastery Piano)',
+      src: 'assets/audio/mlbb-piano-theme.mp3',
+      fallback: 'assets/audio/mlbb-welcome-lobby.mp3',
       defaultPage: 'about'
     },
     {
-      id: 'take-over',
-      title: 'Take Over (Ambush Battle)',
-      src: 'assets/audio/take-over.mp3',
-      fallback: 'https://archive.org/download/persona-5-royal-ost/1-03%20Take%20Over.mp3',
+      id: 'mlbb-seasonal-theme',
+      title: 'Land of Dawn (Seasonal Theme)',
+      src: 'assets/audio/mlbb-seasonal-theme.mp3',
+      fallback: 'assets/audio/mlbb-welcome-lobby.mp3',
       defaultPage: 'project'
     },
     {
       id: 'royal-days',
-      title: 'Royal Days (Tokyo Daylight)',
+      title: 'Celestial Lounge (Instrumental)',
       src: 'assets/audio/royal-days.mp3',
-      fallback: 'https://archive.org/download/persona-5-royal-ost/1-02%20Royal%20Days.mp3',
+      fallback: 'assets/audio/mlbb-piano-theme.mp3',
       defaultPage: 'any'
     },
     {
-      id: 'last-surprise',
-      title: 'Last Surprise (Phantom Battle)',
-      src: 'https://archive.org/download/Persona5LastSurpriseOFFICIALLyrics/Persona%205%20-%20Last%20Surprise%20OFFICIAL%20Lyrics.mp3',
-      fallback: 'assets/audio/take-over.mp3',
-      defaultPage: 'any'
-    },
-    {
-      id: 'wake-up-get-up',
-      title: 'Wake Up, Get Up, Get Out There',
-      src: 'https://archive.org/download/1-01.-wake-up-get-up-get-out-there/1-01.%20Wake%20Up%2C%20Get%20Up%2C%20Get%20Out%20There.mp3',
-      fallback: 'assets/audio/colors-flying-high.mp3',
-      defaultPage: 'any'
-    },
-    {
-      id: 'aria-of-the-soul',
-      title: 'Aria of the Soul (Velvet Room)',
-      src: 'https://archive.org/download/persona-5-ost-aria-of-the-soul.mp3/Persona%205%20OST%20-%20Aria%20Of%20The%20Soul.mp3',
-      fallback: 'assets/audio/no-more-what-ifs.mp3',
+      id: 'take-over',
+      title: 'Teamfight Overdrive (Battle Mix)',
+      src: 'assets/audio/take-over.mp3',
+      fallback: 'assets/audio/mlbb-welcome-lobby.mp3',
       defaultPage: 'any'
     }
   ];
 
   /* ========================================================================
-     1. WEB AUDIO API — PERSONA 5 UI SOUND EFFECTS SYNTHESIZER
+     1. WEB AUDIO API — MLBB CELESTIAL UI SOUND EFFECTS SYNTHESIZER
      ======================================================================== */
-  class PersonaSoundFX {
+  class CelestialSoundFX {
     constructor() {
       this.ctx = null;
       this.sfxMuted = false;
@@ -91,7 +76,7 @@
       }
     }
 
-    /** Crisp Persona 5 menu cursor tick/clack */
+    /** Subtle MLBB mana crystal hover chime */
     playHover() {
       if (this.sfxMuted) return;
       this.initContext();
@@ -101,152 +86,92 @@
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(1180, now);
-      osc.frequency.exponentialRampToValueAtTime(2450, now + 0.038);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(987.77, now); // B5
+      osc.frequency.exponentialRampToValueAtTime(1479.98, now + 0.045); // F#6
 
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start(now);
-      osc.stop(now + 0.048);
+      osc.stop(now + 0.06);
     }
 
-    /** Metallic Rebel Dagger stab + jazz seventh chord accent */
+    /** Golden Mythic button confirm chord */
     playConfirm() {
       if (this.sfxMuted) return;
       this.initContext();
       if (!this.ctx) return;
 
       const now = this.ctx.currentTime;
-      const freqs = [587.33, 880, 1108.73, 1396.91]; // Dmaj7 sharp punk stab
+      const freqs = [587.33, 880, 1174.66]; // D5 - A5 - D6
       freqs.forEach((freq, idx) => {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = idx % 2 === 0 ? 'sawtooth' : 'square';
-        osc.frequency.setValueAtTime(freq, now + idx * 0.014);
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.04, now + 0.19);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.018);
 
-        gain.gain.setValueAtTime(0.06, now + idx * 0.014);
+        gain.gain.setValueAtTime(0.055, now + idx * 0.018);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.start(now + idx * 0.014);
+        osc.start(now + idx * 0.018);
         osc.stop(now + 0.24);
       });
     }
 
-    /** Full-screen Page Transition Chain & Slash Whoosh */
+    /** MLBB "Match Found / Gate Loading" transition sound */
     playSlashTransition() {
       if (this.sfxMuted) return;
       this.initContext();
       if (!this.ctx) return;
 
       const now = this.ctx.currentTime;
-
-      // White noise burst for blade slash
-      const bufferSize = this.ctx.sampleRate * 0.28;
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i += 1) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.09));
-      }
-
-      const noise = this.ctx.createBufferSource();
-      noise.buffer = buffer;
-
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(900, now);
-      filter.frequency.exponentialRampToValueAtTime(3400, now + 0.22);
-      filter.Q.value = 1.8;
-
-      const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.27);
-
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-      noise.start(now);
-
-      // Dramatic P5 low-end sting
-      const sub = this.ctx.createOscillator();
-      const subGain = this.ctx.createGain();
-      sub.type = 'sawtooth';
-      sub.frequency.setValueAtTime(220, now);
-      sub.frequency.exponentialRampToValueAtTime(73.42, now + 0.32);
-      subGain.gain.setValueAtTime(0.14, now);
-      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
-
-      sub.connect(subGain);
-      subGain.connect(this.ctx.destination);
-      sub.start(now);
-      sub.stop(now + 0.35);
+      const chord = [293.66, 440, 587.33, 739.99, 1174.66]; // D Major Celestial Resonance
+      chord.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = idx === 0 ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.02);
+        gain.gain.setValueAtTime(idx === 0 ? 0.04 : 0.05, now + idx * 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.02);
+        osc.stop(now + 0.44);
+      });
     }
 
-    /** All-Out Attack Shatter Fanfare */
+    /** Victory / Objective Inspect Fanfare */
     playAllOutAttack() {
       if (this.sfxMuted) return;
       this.initContext();
       if (!this.ctx) return;
 
-      this.playSlashTransition();
-      const notes = [440, 554.37, 659.25, 880, 1108.73];
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 - E5 - G5 - C6
       const now = this.ctx.currentTime;
       notes.forEach((freq, i) => {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, now + 0.06 * i);
-        gain.gain.setValueAtTime(0.07, now + 0.06 * i);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06 * i + 0.3);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + 0.055 * i);
+        gain.gain.setValueAtTime(0.06, now + 0.055 * i);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055 * i + 0.28);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.start(now + 0.06 * i);
-        osc.stop(now + 0.06 * i + 0.32);
+        osc.start(now + 0.055 * i);
+        osc.stop(now + 0.055 * i + 0.3);
       });
     }
   }
 
-  const sfx = new PersonaSoundFX();
+  const sfx = new CelestialSoundFX();
 
   /* ========================================================================
-     2. RANSOM-NOTE CUTOUT TYPOGRAPHY FORMATTER
-     ======================================================================== */
-  function initRansomTypography() {
-    const nodes = document.querySelectorAll('[data-ransom]');
-    nodes.forEach((node) => {
-      const rawText = node.textContent.trim();
-      node.textContent = '';
-      node.classList.add('p5-ransom-word');
-      node.setAttribute('aria-label', rawText);
-
-      let charIndex = 0;
-      const words = rawText.split(/\s+/);
-      words.forEach((word) => {
-        const wordGroup = document.createElement('span');
-        wordGroup.className = 'p5-ransom-group';
-        wordGroup.setAttribute('aria-hidden', 'true');
-
-        Array.from(word).forEach((char) => {
-          const span = document.createElement('span');
-          span.className = `p5-ransom-char p5-ransom-char--${(charIndex % 4) + 1}`;
-          span.textContent = char;
-          wordGroup.appendChild(span);
-          charIndex += 1;
-        });
-
-        node.appendChild(wordGroup);
-      });
-    });
-  }
-
-  /* ========================================================================
-     3. PAGE-TO-PAGE CALLING CARD / SLASH TRANSITION MANAGER
+     2. MLBB LOADING SCREEN / GATE TRANSITION MANAGER
      ======================================================================== */
   function initPageTransitions() {
     const stage = document.getElementById('p5-transition-stage');
@@ -254,7 +179,15 @@
     const subEl = document.getElementById('p5-transition-sub');
     if (!stage) return;
 
-    // Check if arriving from an animated page transition
+    // Ensure loading bar exists inside transition banner
+    const banner = stage.querySelector('.p5-transition-banner');
+    if (banner && !banner.querySelector('.mlbb-loading-bar-wrap')) {
+      const barWrap = document.createElement('div');
+      barWrap.className = 'mlbb-loading-bar-wrap';
+      barWrap.innerHTML = '<div class="mlbb-loading-bar-fill"></div>';
+      banner.appendChild(barWrap);
+    }
+
     try {
       const incoming = sessionStorage.getItem(STORAGE_KEY_TRANSITION);
       if (incoming) {
@@ -267,7 +200,7 @@
           setTimeout(() => {
             stage.classList.remove('is-closing');
             stage.classList.remove('is-active');
-          }, 80);
+          }, 90);
         });
       } else {
         stage.classList.remove('is-closing', 'is-active');
@@ -276,12 +209,10 @@
       stage.classList.remove('is-closing', 'is-active');
     }
 
-    // Ensure mobile Back/Forward cache (bfcache) never leaves transition blades layered on screen
     window.addEventListener('pageshow', () => {
       stage.classList.remove('is-closing', 'is-active');
     });
 
-    // Intercept links to index.html, about.html, project.html
     const navLinks = document.querySelectorAll('a[data-p5-transition]');
     navLinks.forEach((link) => {
       link.addEventListener('mouseenter', () => sfx.playHover());
@@ -291,7 +222,6 @@
           return;
         }
 
-        // Prevent redundant navigation if already on the exact same page file
         const currentPath = window.location.pathname.split('/').pop() || 'index.html';
         if (href === currentPath) {
           event.preventDefault();
@@ -302,13 +232,12 @@
         event.preventDefault();
         sfx.playSlashTransition();
 
-        // Persist current BGM state right before navigating
         if (window.p5JukeboxInstance) {
           window.p5JukeboxInstance.saveState();
         }
 
-        const customLabel = link.getAttribute('data-transition-title') || 'TAKING YOUR HEART';
-        const customSub = link.getAttribute('data-transition-sub') || `INFILTRATING // ${href.toUpperCase()}`;
+        const customLabel = link.getAttribute('data-transition-title') || 'ENTERING LAND OF DAWN';
+        const customSub = link.getAttribute('data-transition-sub') || `LOADING // ${href.toUpperCase()} (100%)`;
 
         if (labelEl) labelEl.textContent = customLabel;
         if (subEl) subEl.textContent = customSub;
@@ -326,15 +255,15 @@
 
         setTimeout(() => {
           window.location.href = href;
-        }, 660);
+        }, 620);
       });
     });
   }
 
   /* ========================================================================
-     4. PERSISTENT VELVET ROOM / LEBLANC BGM JUKEBOX
+     3. PERSISTENT LAND OF DAWN BGM PLAYER
      ======================================================================== */
-  class PersonaJukebox {
+  class CelestialJukebox {
     constructor() {
       this.audio = new Audio();
       this.audio.preload = 'auto';
@@ -342,7 +271,7 @@
       this.audio.volume = 0.55;
 
       const pageId = document.body.getAttribute('data-page') || 'index';
-      const defaultIdx = P5_PLAYLIST.findIndex((t) => t.defaultPage === pageId);
+      const defaultIdx = MLBB_PLAYLIST.findIndex((t) => t.defaultPage === pageId);
       this.trackIndex = defaultIdx >= 0 ? defaultIdx : 0;
       this.isPlaying = false;
 
@@ -366,7 +295,7 @@
         saved = null;
       }
 
-      if (saved && typeof saved.trackIndex === 'number' && P5_PLAYLIST[saved.trackIndex]) {
+      if (saved && typeof saved.trackIndex === 'number' && MLBB_PLAYLIST[saved.trackIndex]) {
         this.trackIndex = saved.trackIndex;
         this.loadTrack(this.trackIndex, saved.currentTime || 0);
         if (saved.sfxMuted) {
@@ -376,17 +305,16 @@
           this.tryPlay();
         }
       } else {
-        const idx = P5_PLAYLIST.findIndex((t) => t.defaultPage === pageId);
+        const idx = MLBB_PLAYLIST.findIndex((t) => t.defaultPage === pageId);
         this.trackIndex = idx >= 0 ? idx : 0;
         this.loadTrack(this.trackIndex, 0);
-        // Attempt auto-start or start on first interaction
         this.tryPlay();
       }
     }
 
     loadTrack(index, seekTime = 0) {
-      this.trackIndex = (index + P5_PLAYLIST.length) % P5_PLAYLIST.length;
-      const track = P5_PLAYLIST[this.trackIndex];
+      this.trackIndex = (index + MLBB_PLAYLIST.length) % MLBB_PLAYLIST.length;
+      const track = MLBB_PLAYLIST[this.trackIndex];
 
       this.audio.onerror = () => {
         if (track.fallback && this.audio.src !== track.fallback) {
@@ -422,7 +350,6 @@
             this.updateUI();
           })
           .catch(() => {
-            // Browser blocked autoplay until user gesture; unlock on first click/keydown
             this.isPlaying = false;
             this.updateUI();
             const unlock = () => {
@@ -493,7 +420,7 @@
     bindUI() {
       if (this.selectEl) {
         this.selectEl.innerHTML = '';
-        P5_PLAYLIST.forEach((track, idx) => {
+        MLBB_PLAYLIST.forEach((track, idx) => {
           const opt = document.createElement('option');
           opt.value = String(idx);
           opt.textContent = `♪ ${track.title}`;
@@ -531,9 +458,9 @@
   }
 
   /* ========================================================================
-     5. INTERACTIVE METAVERSE CANVAS (RINGS, STARS & CLICK SLASHES)
+     4. AMBIENT CELESTIAL MANA PARTICLES & CLICK RIPPLES
      ======================================================================== */
-  function initMetaverseCanvas() {
+  function initCelestialCanvas() {
     const canvas = document.getElementById('p5-metaverse-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -547,104 +474,49 @@
       height = canvas.height = window.innerHeight;
     });
 
-    // Floating P5 4-point stars
-    const stars = Array.from({ length: 24 }, () => ({
+    const motes = Array.from({ length: 28 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      size: 6 + Math.random() * 14,
-      speedY: -0.25 - Math.random() * 0.65,
-      speedX: (Math.random() - 0.5) * 0.4,
-      rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.03,
-      color: Math.random() > 0.72 ? '#FFE600' : Math.random() > 0.35 ? '#D80018' : '#F7F5F0'
+      r: 1.5 + Math.random() * 2.8,
+      vy: -0.2 - Math.random() * 0.45,
+      vx: (Math.random() - 0.5) * 0.3,
+      color: Math.random() > 0.45 ? 'rgba(0, 212, 255, 0.55)' : 'rgba(229, 184, 91, 0.55)'
     }));
 
-    // Click slash bursts
-    const slashes = [];
+    const ripples = [];
     window.addEventListener('pointerdown', (e) => {
-      slashes.push({
-        x: e.clientX,
-        y: e.clientY,
-        angle: -0.35 + (Math.random() - 0.5) * 0.5,
-        life: 1.0
-      });
+      ripples.push({ x: e.clientX, y: e.clientY, r: 4, alpha: 0.75 });
     });
 
-    function drawFourPointStar(cx, cy, radius, rotation, fill) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-      ctx.beginPath();
-      for (let i = 0; i < 8; i += 1) {
-        const r = i % 2 === 0 ? radius : radius * 0.32;
-        const a = (i * Math.PI) / 4;
-        const px = Math.cos(a) * r;
-        const py = Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = fill;
-      ctx.fill();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = '#070709';
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    let tick = 0;
     function render() {
       ctx.clearRect(0, 0, width, height);
-      tick += 0.012;
 
-      // Subtle Mementos target ripple rings in top-right / center-right
-      const centerX = width * 0.76;
-      const centerY = height * 0.46;
-      ctx.save();
-      for (let r = 0; r < 5; r += 1) {
-        const radius = ((r * 135 + tick * 60) % 680) + 40;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = r % 2 === 0 ? 'rgba(216, 0, 24, 0.14)' : 'rgba(247, 245, 240, 0.06)';
-        ctx.lineWidth = r % 2 === 0 ? 6 : 2;
-        ctx.setLineDash([28, 18]);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Update & draw floating comic stars
-      stars.forEach((s) => {
-        s.x += s.speedX;
-        s.y += s.speedY;
-        s.rot += s.rotSpeed;
-        if (s.y < -30) {
-          s.y = height + 25;
-          s.x = Math.random() * width;
+      motes.forEach((m) => {
+        m.x += m.vx;
+        m.y += m.vy;
+        if (m.y < -10) {
+          m.y = height + 10;
+          m.x = Math.random() * width;
         }
-        drawFourPointStar(s.x, s.y, s.size, s.rot, s.color);
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fillStyle = m.color;
+        ctx.fill();
       });
 
-      // Update & draw click dagger slashes
-      for (let i = slashes.length - 1; i >= 0; i -= 1) {
-        const sl = slashes[i];
-        sl.life -= 0.06;
-        if (sl.life <= 0) {
-          slashes.splice(i, 1);
+      for (let i = ripples.length - 1; i >= 0; i -= 1) {
+        const rp = ripples[i];
+        rp.r += 2.4;
+        rp.alpha -= 0.028;
+        if (rp.alpha <= 0) {
+          ripples.splice(i, 1);
           continue;
         }
-        ctx.save();
-        ctx.translate(sl.x, sl.y);
-        ctx.rotate(sl.angle);
-        const len = 110 * (1.2 - sl.life * 0.4);
         ctx.beginPath();
-        ctx.moveTo(-len, 0);
-        ctx.lineTo(0, -9 * sl.life);
-        ctx.lineTo(len, 0);
-        ctx.lineTo(0, 9 * sl.life);
-        ctx.closePath();
-        ctx.fillStyle = sl.life > 0.5 ? '#F7F5F0' : '#D80018';
-        ctx.fill();
-        ctx.restore();
+        ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 212, 255, ${rp.alpha})`;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
       }
 
       requestAnimationFrame(render);
@@ -654,11 +526,11 @@
   }
 
   /* ========================================================================
-     6. PAGE-SPECIFIC INTERACTIVE CONTROLLERS
+     5. PAGE-SPECIFIC INTERACTIVE CONTROLLERS
      ======================================================================== */
 
-  /** index.html: Calling Card Modal Generator */
-  function initPortalInteractions() {
+  /** index.html: Matchmaking Queue / Lobby Invite Modal */
+  function initLobbyInteractions() {
     const openBtn = document.getElementById('p5-open-calling-card');
     const modal = document.getElementById('p5-calling-card-modal');
     const closeBtn = document.getElementById('p5-close-calling-card');
@@ -684,64 +556,61 @@
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
         sfx.playConfirm();
-        const text =
-          'SIR / MADAM OF THE DIGITAL REALM — We will steal your boredom and materialize unforgettable web experiences at https://diibaratkan.my.id — From: The Phantom Architect of diibaratkan.my.id';
+        const text = 'Join the Celestial Lobby at https://diibaratkan.my.id — Mythical Immortal Developer Portfolio';
         if (navigator.clipboard) {
           navigator.clipboard.writeText(text).catch(() => {});
         }
-        copyBtn.textContent = 'CALLING CARD DISPATCHED ★';
+        copyBtn.textContent = 'Lobby Invite Copied ★';
         setTimeout(() => {
-          copyBtn.textContent = 'COPY CALLING CARD MESSAGE';
-        }, 2400);
+          copyBtn.textContent = 'Copy Lobby Invite Link';
+        }, 2200);
       });
     }
   }
 
-  /** about.html: Outfit Mode Switch, Persona Compendium Tabs & Confidant Dialogue */
-  function initAboutInteractions() {
-    // 1. Portrait Filter Toggle
+  /** about.html: Skin Aura Toggle, Emblem Loadout Tabs & Quick Chat */
+  function initHeroProfileInteractions() {
     const switchBtn = document.getElementById('p5-outfit-toggle');
     const portraitWrap = document.getElementById('p5-portrait-wrap');
     const attireLabel = document.getElementById('p5-attire-status');
     if (switchBtn && portraitWrap) {
       switchBtn.addEventListener('click', () => {
         sfx.playConfirm();
-        const isShibuya = portraitWrap.classList.toggle('is-shibuya-mode');
+        const isAlt = portraitWrap.classList.toggle('is-shibuya-mode');
         if (attireLabel) {
-          attireLabel.textContent = isShibuya
-            ? 'Creative Technologist // Monochrome'
-            : 'Creative Technologist';
+          attireLabel.textContent = isAlt
+            ? 'Collector Skin // Astral Sovereign'
+            : 'Mage / Architect // Mythical Immortal';
         }
-        switchBtn.textContent = isShibuya
-          ? 'Restore Crimson Portrait'
-          : 'Toggle Monochrome Portrait';
+        switchBtn.textContent = isAlt
+          ? 'Switch to Default Celestial Skin'
+          : 'Preview Astral Collector Aura';
       });
     }
 
-    // 2. Tech Stack Tabs
-    const PERSONA_DATA = {
+    const EMBLEM_DATA = {
       arsene: {
         skills: [
-          { name: 'Frontend Architecture', sub: 'TypeScript, React, Next.js & Modern CSS', cost: 'Core' },
-          { name: 'Motion & Interactive UI', sub: 'Canvas 2D, WebGL & Smooth Page Transitions', cost: 'Motion' },
-          { name: 'Design Systems', sub: 'Accessible, Responsive Component Libraries', cost: 'UI/UX' },
-          { name: 'Performance Tuning', sub: 'Core Web Vitals & 60FPS Rendering', cost: 'Speed' }
+          { name: 'Arcane Frontend Mastery', sub: 'TypeScript, React, Next.js & Modern CSS Grid', cost: 'Mage T3' },
+          { name: 'Celestial Motion & Canvas', sub: '60FPS Transitions, WebGL & Interactive SVG', cost: 'Agility' },
+          { name: 'Design System Harmony', sub: 'Accessible, Mobile-First Component Architecture', cost: 'Mastery' },
+          { name: 'Mana Flow Optimization', sub: 'Instant Load Times & Core Web Vitals Tuning', cost: 'Passive' }
         ]
       },
       satanael: {
         skills: [
-          { name: 'API & Services', sub: 'Node.js, Python FastAPI & REST / GraphQL', cost: 'Backend' },
-          { name: 'Data & Storage', sub: 'PostgreSQL, Redis & Real-Time Sync', cost: 'Data' },
-          { name: 'Cloud & Deployment', sub: 'Docker, CI/CD Pipelines & Edge Hosting', cost: 'DevOps' },
-          { name: 'Security & Auth', sub: 'OAuth2, JWT & End-to-End Protection', cost: 'Auth' }
+          { name: 'Shadow Blade APIs', sub: 'Node.js, Python FastAPI & High-Throughput Services', cost: 'Assassin T3' },
+          { name: 'Sanctuary Data Vault', sub: 'PostgreSQL, Redis Caching & Realtime Sync', cost: 'Persistence' },
+          { name: 'Immortal Cloud Deployment', sub: 'Docker, CI/CD Pipelines & Edge Infrastructure', cost: 'DevOps' },
+          { name: 'Aegis Security Protocol', sub: 'OAuth2, JWT & End-to-End Encryption', cost: 'Defense' }
         ]
       },
       izanagi: {
         skills: [
-          { name: 'AI & LLM Integration', sub: 'Agentic Workflows, RAG & Prompt Engineering', cost: 'AI' },
-          { name: 'System Design', sub: 'Clean Architecture & Modular Codebases', cost: 'Arch' },
-          { name: 'Cross-Platform Web', sub: 'Mobile-First Layouts & Progressive Web Apps', cost: 'Mobile' },
-          { name: 'Product Prototyping', sub: 'Rapid Concept-to-Production Execution', cost: 'Product' }
+          { name: 'Oracle AI & LLM Agents', sub: 'RAG Pipelines, Tool Use & Intelligent Workflows', cost: 'Support T3' },
+          { name: 'Domain Architecture', sub: 'Clean Codebases, SOLID & Modular Systems', cost: 'Strategy' },
+          { name: 'Cross-Lane Responsiveness', sub: 'Seamless Desktop, Tablet & Mobile Execution', cost: 'Utility' },
+          { name: 'Rapid Objective Delivery', sub: 'Concept-to-Production Prototyping & Testing', cost: 'Macro' }
         ]
       }
     };
@@ -749,8 +618,8 @@
     const tabs = document.querySelectorAll('[data-persona-tab]');
     const skillsContainer = document.getElementById('p5-skill-slots');
 
-    function renderPersona(key) {
-      const p = PERSONA_DATA[key];
+    function renderEmblem(key) {
+      const p = EMBLEM_DATA[key];
       if (!p || !skillsContainer) return;
 
       skillsContainer.innerHTML = p.skills
@@ -773,11 +642,10 @@
         sfx.playConfirm();
         tabs.forEach((t) => t.classList.remove('is-active'));
         tab.classList.add('is-active');
-        renderPersona(tab.getAttribute('data-persona-tab'));
+        renderEmblem(tab.getAttribute('data-persona-tab'));
       });
     });
 
-    // 3. Confidant Dialogue Choices
     const dialogueText = document.getElementById('p5-dialogue-text');
     const choiceBtns = document.querySelectorAll('[data-dialogue-reply]');
     let typeTimer = null;
@@ -790,11 +658,11 @@
       typeTimer = setInterval(() => {
         dialogueText.textContent += message.charAt(idx);
         idx += 1;
-        if (idx % 4 === 0) sfx.playHover();
+        if (idx % 5 === 0) sfx.playHover();
         if (idx >= message.length) {
           clearInterval(typeTimer);
         }
-      }, 16);
+      }, 14);
     }
 
     choiceBtns.forEach((btn) => {
@@ -807,36 +675,72 @@
     });
   }
 
-  /** project.html: Category Filter & All-Out Attack Project Modal */
-  function initProjectInteractions() {
+  /** project.html: Interactive Land of Dawn Map & Objective Modal */
+  function initLandOfDawnMap() {
+    const LANE_METADATA = {
+      all: {
+        title: 'All Lanes Active — Land of Dawn Overview (4 Objectives)',
+        desc: 'Inspecting all turrets and sanctuary objectives across EXP Lane, Mid Lane, Gold Lane, and the Luminous Lord Pit.'
+      },
+      web: {
+        title: 'EXP Lane & Lord Sanctum — Web Platforms & Core Architecture',
+        desc: 'Frontline web applications built for durability, high concurrency, and seamless cross-page responsiveness.'
+      },
+      ai: {
+        title: 'Mid Lane Sanctum — Arcane AI & Neural Telemetry',
+        desc: 'High-ground intelligence systems, real-time analytics dashboards, and LLM agent orchestration.'
+      },
+      ui: {
+        title: 'Gold Lane — Precision Interactive UI & Audio DSP',
+        desc: 'High-impact interactive media, custom Web Audio synthesizers, and expressive visual craftsmanship.'
+      }
+    };
+
     const filterBtns = document.querySelectorAll('[data-filter]');
+    const mapNodes = document.querySelectorAll('[data-map-filter]');
     const cards = document.querySelectorAll('[data-category]');
-    const secPct = document.getElementById('p5-security-pct');
-    const secFill = document.getElementById('p5-security-fill');
+    const laneTitle = document.getElementById('mlbb-lane-title');
+    const laneDesc = document.getElementById('mlbb-lane-desc');
+
+    function applyLaneFilter(filterKey) {
+      sfx.playConfirm();
+
+      filterBtns.forEach((b) => {
+        b.classList.toggle('is-active', b.getAttribute('data-filter') === filterKey);
+      });
+
+      mapNodes.forEach((node) => {
+        const nodeFilter = node.getAttribute('data-map-filter');
+        const isActive = filterKey === 'all' || nodeFilter === filterKey;
+        node.style.opacity = isActive ? '1' : '0.38';
+      });
+
+      cards.forEach((card) => {
+        const cat = card.getAttribute('data-category');
+        const show = filterKey === 'all' || cat === filterKey;
+        card.style.display = show ? 'flex' : 'none';
+      });
+
+      const meta = LANE_METADATA[filterKey] || LANE_METADATA.all;
+      if (laneTitle) laneTitle.textContent = meta.title;
+      if (laneDesc) laneDesc.textContent = meta.desc;
+    }
 
     filterBtns.forEach((btn) => {
       btn.addEventListener('mouseenter', () => sfx.playHover());
       btn.addEventListener('click', () => {
-        sfx.playConfirm();
-        filterBtns.forEach((b) => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-
-        const filter = btn.getAttribute('data-filter');
-        let visibleCount = 0;
-        cards.forEach((card) => {
-          const cat = card.getAttribute('data-category');
-          const show = filter === 'all' || cat === filter;
-          card.style.display = show ? 'flex' : 'none';
-          if (show) visibleCount += 1;
-        });
-
-        const pct = filter === 'all' ? 99 : Math.min(99, 65 + visibleCount * 11);
-        if (secPct) secPct.textContent = `${pct}%`;
-        if (secFill) secFill.style.width = `${pct}%`;
+        applyLaneFilter(btn.getAttribute('data-filter') || 'all');
       });
     });
 
-    // All-Out Attack Dossier Modal
+    mapNodes.forEach((node) => {
+      node.addEventListener('mouseenter', () => sfx.playHover());
+      node.addEventListener('click', () => {
+        applyLaneFilter(node.getAttribute('data-map-filter') || 'all');
+      });
+    });
+
+    // Objective Briefing Modal
     const modal = document.getElementById('p5-aoa-modal');
     const modalTitle = document.getElementById('p5-aoa-title');
     const modalTarget = document.getElementById('p5-aoa-target');
@@ -850,8 +754,8 @@
       btn.addEventListener('click', () => {
         sfx.playAllOutAttack();
         if (!modal) return;
-        if (modalTitle) modalTitle.textContent = btn.getAttribute('data-title') || 'PALACE TREASURE';
-        if (modalTarget) modalTarget.textContent = btn.getAttribute('data-target') || 'TARGET SECURED';
+        if (modalTitle) modalTitle.textContent = btn.getAttribute('data-title') || 'Objective Secured';
+        if (modalTarget) modalTarget.textContent = btn.getAttribute('data-target') || 'Land of Dawn Objective';
         if (modalDesc) modalDesc.textContent = btn.getAttribute('data-desc') || '';
         if (modalImpact) modalImpact.textContent = btn.getAttribute('data-impact') || '';
         modal.classList.add('is-open');
@@ -876,12 +780,11 @@
      INITIALIZATION ON DOM READY
      ======================================================================== */
   document.addEventListener('DOMContentLoaded', () => {
-    initRansomTypography();
-    window.p5JukeboxInstance = new PersonaJukebox();
+    window.p5JukeboxInstance = new CelestialJukebox();
     initPageTransitions();
-    initMetaverseCanvas();
-    initPortalInteractions();
-    initAboutInteractions();
-    initProjectInteractions();
+    initCelestialCanvas();
+    initLobbyInteractions();
+    initHeroProfileInteractions();
+    initLandOfDawnMap();
   });
 })();

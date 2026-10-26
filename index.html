@@ -3,205 +3,211 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>diibaratkan.my.id — Creative Developer Portfolio</title>
-  <meta name="description" content="Personal portfolio and interactive hub for diibaratkan.my.id — Explore About and Projects with Persona-inspired motion and music." />
-  <link rel="icon" type="image/svg+xml" href="assets/img/phantom-logo.svg" />
+  <title>diibaratkan.my.id — Celestial Lobby (MLBB Edition)</title>
+  <meta name="description" content="Mobile Legends: Bang Bang (MLBB) inspired Celestial Lobby portfolio for diibaratkan.my.id — Enter Hero Profile (about.html) or Land of Dawn Map (project.html)." />
+  <link rel="icon" type="image/svg+xml" href="assets/img/mlbb-mythic-crest.svg" />
   <link rel="stylesheet" href="assets/css/persona5.css" />
 </head>
 <body data-page="index">
 
-  <!-- Subtle Ambient Background -->
+  <!-- Ambient Celestial Sanctuary Background -->
   <div class="p5-bg-stack" aria-hidden="true">
     <div class="p5-bg-art"></div>
     <div class="p5-bg-vignette"></div>
   </div>
   <canvas id="p5-metaverse-canvas" aria-hidden="true"></canvas>
 
-  <!-- Page-to-Page Animated Diagonal Transition Stage -->
+  <!-- MLBB Match Found / Loading Screen Gate Transition -->
   <div id="p5-transition-stage" class="p5-transition-stage" aria-hidden="true">
     <div class="p5-slash-blade p5-slash-blade--1"></div>
     <div class="p5-slash-blade p5-slash-blade--2"></div>
-    <div class="p5-slash-blade p5-slash-blade--3"></div>
-    <div class="p5-slash-blade p5-slash-blade--4"></div>
     <div class="p5-transition-banner">
-      <img src="assets/img/phantom-logo.svg" alt="" class="p5-transition-crest" />
-      <div id="p5-transition-label" class="p5-transition-label">DIIBARATKAN.MY.ID</div>
-      <div id="p5-transition-sub" class="p5-transition-sub">LOADING PAGE</div>
+      <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Emblem" class="p5-transition-crest" />
+      <div id="p5-transition-label" class="p5-transition-label">ENTERING CELESTIAL LOBBY</div>
+      <div id="p5-transition-sub" class="p5-transition-sub">DIIBARATKAN.MY.ID // MATCH READY</div>
+      <div class="mlbb-loading-bar-wrap">
+        <div class="mlbb-loading-bar-fill"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Clean Top Navigation Bar -->
+  <!-- Top Celestial Lobby Header -->
   <header class="p5-hud-header">
     <div class="p5-header-inner">
       <div style="display: flex; align-items: center; gap: 14px;">
         <a href="index.html"
            class="p5-brand-link"
            data-p5-transition
-           data-transition-title="INTRO PORTAL"
-           data-transition-sub="DIIBARATKAN.MY.ID // INDEX.HTML">
-          <img src="assets/img/phantom-logo.svg" alt="" class="p5-brand-logo" />
+           data-transition-title="ENTERING CELESTIAL LOBBY"
+           data-transition-sub="LOBBY // INDEX.HTML (100%)">
+          <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Emblem" class="p5-brand-logo" />
           <span class="p5-brand-name">diibaratkan.my.id</span>
         </a>
-        <span class="p5-date-pill"><strong>10/23</strong> • FRI • EVENING</span>
+        <span class="p5-date-pill">
+          <span class="mlbb-ping-dot" aria-hidden="true"></span>
+          <strong>MYTHICAL IMMORTAL ★ 108</strong> • 12ms
+        </span>
       </div>
 
-      <nav class="p5-baton-nav" aria-label="Primary Navigation">
+      <nav class="p5-baton-nav" aria-label="Lobby Navigation">
         <a href="index.html"
            class="p5-nav-link is-active"
            data-p5-transition
-           data-transition-title="INTRO PORTAL"
-           data-transition-sub="INDEX.HTML">
-          Intro
+           data-transition-title="CELESTIAL LOBBY"
+           data-transition-sub="LOBBY // INDEX.HTML">
+          Lobby
         </a>
         <a href="about.html"
            class="p5-nav-link"
            data-p5-transition
-           data-transition-title="ABOUT &amp; PROFILE"
+           data-transition-title="LOADING HERO MASTERY"
            data-transition-sub="MAIN PAGE // ABOUT.HTML">
-          About
+          Hero Profile
         </a>
         <a href="project.html"
            class="p5-nav-link"
            data-p5-transition
-           data-transition-title="SELECTED PROJECTS"
-           data-transition-sub="ARCHIVE // PROJECT.HTML">
-          Projects
+           data-transition-title="ENTERING LAND OF DAWN"
+           data-transition-sub="TACTICAL MAP // PROJECT.HTML">
+          Land of Dawn Map
         </a>
       </nav>
     </div>
   </header>
 
-  <!-- Spacious Hero Section -->
+  <!-- Spacious 2-Column Celestial Lobby -->
   <main class="p5-portal-layout">
     <section class="p5-portal-command">
-      <div class="p5-eyebrow">Creative Developer &amp; Digital Crafter</div>
+      <div class="p5-eyebrow">Season 38 // Celestial Sanctuary Lobby</div>
 
       <h1 class="p5-display-title">
-        Crafting bold web experiences at <span class="accent">diibaratkan.my.id</span>
+        Welcome to the <span class="accent">Land of Dawn</span> at diibaratkan.my.id
       </h1>
 
       <p class="p5-lead-text">
-        Welcome to the personal space of <strong>diibaratkan.my.id</strong>.
-        Choose a destination below to explore the main profile page or browse featured engineering &amp; design projects.
+        Step into the interactive lobby of <strong>diibaratkan.my.id</strong>.
+        Select a mode below to launch the <strong>Loading Screen Transition</strong> into the main Hero Mastery Profile or inspect project objectives across the Land of Dawn map.
       </p>
 
-      <!-- Clickable Navigation Cards for the Two Pages + Quick Note -->
-      <div class="p5-command-menu" role="navigation" aria-label="Site Destinations">
+      <!-- Clickable Lobby Mode Selection Cards -->
+      <div class="p5-command-menu" role="navigation" aria-label="Lobby Mode Selection">
 
-        <!-- 1. Clickable to ABOUT.HTML (Main Page) -->
+        <!-- 1. Clickable to ABOUT.HTML (Main Page / Hero Mastery) -->
         <a href="about.html"
            class="p5-command-blade"
            data-p5-transition
-           data-transition-title="ABOUT &amp; PROFILE"
-           data-transition-sub="MAIN PAGE // ABOUT.HTML">
+           data-transition-title="LOADING HERO MASTERY"
+           data-transition-sub="MAIN PAGE // ABOUT.HTML (100%)">
           <div class="p5-blade-left">
-            <span class="p5-blade-eyebrow">01 — Main Page</span>
-            <span class="p5-blade-title">About &amp; Capabilities (about.html)</span>
-            <span class="p5-blade-desc">Background, core competencies, technical stack, and interactive Q&amp;A</span>
+            <span class="p5-blade-eyebrow">Mode 01 — Ranked Profile (Main Page)</span>
+            <span class="p5-blade-title">Hero Mastery &amp; Build (about.html)</span>
+            <span class="p5-blade-desc">Inspect developer attributes, 5-point battlefield radar, and Emblem tech stack</span>
           </div>
           <div class="p5-blade-right">
-            <img src="assets/img/dagger.svg" alt="" class="p5-blade-dagger" />
-            <span class="p5-blade-arrow">Explore →</span>
+            <span class="p5-blade-arrow">Enter Profile →</span>
           </div>
         </a>
 
-        <!-- 2. Clickable to PROJECT.HTML (Projects Page) -->
+        <!-- 2. Clickable to PROJECT.HTML (Land of Dawn Map & Projects) -->
         <a href="project.html"
            class="p5-command-blade"
            data-p5-transition
-           data-transition-title="SELECTED PROJECTS"
-           data-transition-sub="ARCHIVE // PROJECT.HTML">
+           data-transition-title="ENTERING LAND OF DAWN"
+           data-transition-sub="TACTICAL MAP // PROJECT.HTML (100%)">
           <div class="p5-blade-left">
-            <span class="p5-blade-eyebrow">02 — Portfolio Works</span>
-            <span class="p5-blade-title">Featured Projects (project.html)</span>
-            <span class="p5-blade-desc">Web applications, interactive UI experiments, and systems architecture</span>
+            <span class="p5-blade-eyebrow">Mode 02 — Tactical Map &amp; Objectives</span>
+            <span class="p5-blade-title">Land of Dawn Projects (project.html)</span>
+            <span class="p5-blade-desc">Interactive 3-lane map — explore EXP, Mid, Gold, and Lord Pit project builds</span>
           </div>
           <div class="p5-blade-right">
-            <img src="assets/img/dagger.svg" alt="" class="p5-blade-dagger" />
-            <span class="p5-blade-arrow">View Work →</span>
+            <span class="p5-blade-arrow">Open Map →</span>
           </div>
         </a>
 
-        <!-- 3. Optional Calling Card / Quick Contact Modal -->
+        <!-- 3. Interactive Match Found / Lobby Invite Modal -->
         <button type="button" id="p5-open-calling-card" class="p5-command-blade">
           <div class="p5-blade-left">
-            <span class="p5-blade-eyebrow">03 — Quick Note</span>
-            <span class="p5-blade-title">Calling Card &amp; Contact</span>
-            <span class="p5-blade-desc">Read a short introduction note or jump straight to collaboration</span>
+            <span class="p5-blade-eyebrow">Mode 03 — Quick Matchmaking</span>
+            <span class="p5-blade-title">Match Found &amp; Lobby Invite</span>
+            <span class="p5-blade-desc">Open the Mythic lobby ready-check prompt or copy the squad invite link</span>
           </div>
           <div class="p5-blade-right">
-            <img src="assets/img/dagger.svg" alt="" class="p5-blade-dagger" />
-            <span class="p5-blade-arrow">Open</span>
+            <span class="p5-blade-arrow">Ready Check</span>
           </div>
         </button>
 
       </div>
     </section>
 
-    <!-- Right Visual Showcase -->
-    <section class="p5-portal-visual" aria-label="Featured Illustration">
+    <!-- Right Column: Hero Pedestal Showcase -->
+    <section class="p5-portal-visual" aria-label="Featured Hero Showcase">
       <div class="p5-art-card">
-        <img src="assets/img/protagonist-cutout.png"
-             alt="Illustrated portrait for diibaratkan.my.id"
+        <span class="mlbb-skin-tag">★ Official MLBB Splash</span>
+        <img src="assets/img/mlbb-hero-portrait.jpg"
+             alt="Xavier: Defier of Light — Hero Showcase for diibaratkan.my.id"
              class="p5-protagonist-img" />
         <div class="p5-art-caption">
           <div>
-            <div class="p5-art-caption-title">diibaratkan.my.id</div>
-            <div class="p5-art-caption-sub">Interactive Web &amp; Software Studio</div>
+            <div class="p5-art-caption-title">diibaratkan // Xavier — Defier of Light</div>
+            <div class="p5-art-caption-sub">Role: Mage / Core Full-Stack Engineer</div>
           </div>
-          <img src="assets/img/phantom-logo.svg" alt="" style="width: 32px; height: 32px;" />
+          <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Rank" style="width: 40px; height: 40px; object-fit: contain;" />
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Calling Card Modal -->
+  <!-- Match Found / Lobby Invite Modal -->
   <div id="p5-calling-card-modal" class="p5-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="p5-cc-heading">
     <div class="p5-modal-card">
       <button type="button" id="p5-close-calling-card" class="p5-modal-close">ESC / Close</button>
-      <div class="p5-eyebrow">Calling Card // diibaratkan.my.id</div>
-      <h2 id="p5-cc-heading" style="font-size: 1.75rem; font-weight: 700; margin-bottom: 14px;">
-        Let's build something memorable.
-      </h2>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <img src="assets/img/mlbb-mythic-immortal.png" alt="Mythical Immortal Rank" style="width: 56px; height: 56px; object-fit: contain;" />
+        <div>
+          <div class="p5-eyebrow" style="margin-bottom: 4px;">Match Found // 10/10 Players Ready</div>
+          <h2 id="p5-cc-heading" style="font-family: var(--font-tech); font-size: 1.75rem; font-weight: 700;">
+            Enter the Land of Dawn
+          </h2>
+        </div>
+      </div>
       <p style="color: var(--text-secondary); margin-bottom: 24px;">
-        Every project on <strong>diibaratkan.my.id</strong> combines clean engineering with distinctive visual character.
-        Explore the main profile or browse the project archive below.
+        Your lobby at <strong>diibaratkan.my.id</strong> is ready for deployment. Choose whether to inspect the Hero Mastery dossier first or jump straight onto the Land of Dawn tactical project map.
       </p>
       <div style="display: flex; flex-wrap: wrap; gap: 12px;">
         <a href="about.html"
            class="p5-btn p5-btn--primary"
            data-p5-transition
-           data-transition-title="ABOUT &amp; PROFILE"
+           data-transition-title="LOADING HERO MASTERY"
            data-transition-sub="MAIN PAGE // ABOUT.HTML">
-          Open About Page →
+          Enter Hero Profile →
         </a>
         <a href="project.html"
            class="p5-btn p5-btn--secondary"
            data-p5-transition
-           data-transition-title="SELECTED PROJECTS"
-           data-transition-sub="ARCHIVE // PROJECT.HTML">
-          Browse Projects →
+           data-transition-title="ENTERING LAND OF DAWN"
+           data-transition-sub="TACTICAL MAP // PROJECT.HTML">
+          Open Land of Dawn Map →
         </a>
         <button type="button" id="p5-copy-calling-card" class="p5-btn p5-btn--secondary">
-          Copy Site Link
+          Copy Lobby Invite Link
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Sleek Audio Player (Leblanc Radio) -->
-  <aside id="p5-jukebox" class="p5-jukebox" aria-label="Background Music Player">
+  <!-- Sleek Bottom Audio Player (Land of Dawn Radio) -->
+  <aside id="p5-jukebox" class="p5-jukebox" aria-label="Lobby Soundtrack Player">
     <div id="p5-vinyl-disc" class="p5-vinyl-disc" aria-hidden="true"></div>
     <div class="p5-jukebox-info">
       <div class="p5-jukebox-kicker">
-        <span>SOUNDTRACK</span>
+        <span>LOBBY SOUNDTRACK</span>
         <span class="p5-eq-bars" aria-hidden="true">
           <span class="p5-eq-bar"></span>
           <span class="p5-eq-bar"></span>
           <span class="p5-eq-bar"></span>
         </span>
       </div>
-      <select id="p5-track-select" class="p5-track-select" aria-label="Select Soundtrack"></select>
+      <select id="p5-track-select" class="p5-track-select" aria-label="Select MLBB Track"></select>
     </div>
     <div class="p5-jukebox-controls">
       <button type="button" id="p5-audio-toggle" class="p5-audio-btn">PLAY BGM</button>

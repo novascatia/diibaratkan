@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" fill="none">
+  <rect width="600" height="360" fill="#070C18"/>
+  <!-- Luminous Lord Pit / Astral Nexus -->
+  <polygon points="150,90 300,36 450,90 450,270 300,324 150,270" fill="#0E1932" stroke="#E5B85B" stroke-width="4"/>
+  <polygon points="190,114 300,72 410,114 410,246 300,288 190,246" fill="#00D4FF" fill-opacity="0.12" stroke="#00D4FF" stroke-width="2"/>
+  <path d="M230,150 L370,150 M230,180 L370,180 M230,210 L330,210" stroke="#FFE89E" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="300" cy="72" r="9" fill="#00D4FF"/>
+  <circle cx="300" cy="288" r="9" fill="#00D4FF"/>
+</svg>
