@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Song Editor - Diibaratkan</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; max-width: 500px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        button { background: #1db954; font-weight: bold; cursor: pointer; }
+        button.reset { background: #e74c3c; }
+    </style>
+</head>
+<body>
+    <h2>Song Control Panel</h2>
+    <label>Now Playing Title:</label>
+    <input type="text" id="nowPlayingInput" placeholder="e.g. Song Name - Artist">
+    <button onclick="updateSong()">Update Now Playing</button>
+    
+    <button class="reset" onclick="resetState()">Reset Everything</button>
+
+    <script>
+        const BIN_URL = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID"; // Replace with your JSONBin or storage API
+        const API_KEY = "YOUR_MASTER_KEY";
+
+        async function updateSong() {
+            const title = document.getElementById("nowPlayingInput").value;
+            
+            // 1. Fetch current data to push old track to history
+            let res = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } });
+            let data = (await res.json()).record;
+
+            let history = data.alreadyPlayed || [];
+            if (data.nowPlaying) {
+                history.unshift(data.nowPlaying); // Add previous track to top of history
+            }
+
+            // 2. Save new state
+            let newState = {
+                nowPlaying: title,
+                alreadyPlayed: history
+            };
+
+            await fetch(BIN_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+                body: JSON.stringify(newState)
+            });
+
+            alert("Updated successfully!");
+        }
+
+        async function resetState() {
+            let newState = { nowPlaying: "Nothing playing right now", alreadyPlayed: [] };
+            await fetch(BIN_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+                body: JSON.stringify(newState)
+            });
+            alert("Reset state applied!");
+        }
+    </script>
+</body>
+</html>
