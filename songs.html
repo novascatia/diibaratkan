@@ -30,7 +30,7 @@
 </div>
 
 <script>
-const binurl = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
+const apiurl = "/api/setlist";
 
 const defaultguitar = [
   "I'll be friends with you - arash buana",
@@ -73,9 +73,8 @@ function rendersection(container, label, songlist, isnowplaying = false) {
 
 async function fetchsetlist() {
   try {
-    const res = await fetch(binurl);
-    const json = await res.json();
-    const store = json.record || {};
+    const res = await fetch(apiurl);
+    const store = await res.json();
 
     const states = store.states || {};
     const customguitar = store.guitar || defaultguitar;
