@@ -1,61 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Live Music Status</title>
-    <style>
-        body { font-family: sans-serif; background: #0f0f0f; color: #fff; padding: 2rem; max-width: 600px; margin: auto; }
-        .card { background: #1a1a1a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #1db954; }
-        ul { padding-left: 20px; color: #aaa; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>novascatia's setlist</title>
+<style>
+  body {
+    background: #111;
+    color: #eee;
+    font-family: sans-serif;
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 0 20px 40px;
+  }
+  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 32px; color: #fff; }
+  h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin: 28px 0 4px; }
+  .song { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
+  .song-title { color: #fff; }
+  .song-artist { color: #888; text-align: right; }
+  #content { margin-top: 10px; }
+</style>
 </head>
 <body>
-    <h1>Live Now Playing</h1>
-    
-    <div class="card">
-        <h3>🎵 Now Playing</h3>
-        <p id="currentSong">Loading...</p>
-    </div>
 
-    <div>
-        <h3>📜 Already Played</h3>
-        <ul id="historyList">
-            <li>Loading history...</li>
-        </ul>
-    </div>
+<h1>novascotia's live setlist 🎸</h1>
+<div id="content">
+  <div class="song"><span class="song-title">Loading...</span></div>
+</div>
 
-    <script>
-        const BIN_URL_READ = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
+<script>
+// Replace with your actual JSONBin ID
+const BIN_URL = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
 
-        async function fetchSongState() {
-            try {
-                let res = await fetch(BIN_URL_READ);
-                let json = await res.json();
-                let data = json.record;
+function renderSection(container, label, songs) {
+  if (!songs || songs.length === 0) return;
+  
+  const h2 = document.createElement('h2');
+  h2.textContent = label;
+  container.appendChild(h2);
 
-                // Update Now Playing
-                document.getElementById("currentSong").innerText = data.nowPlaying || "Nothing playing";
+  songs.forEach(s => {
+    let title = s;
+    let artist = "";
+    if (s.includes(' - ')) {
+      const idx = s.indexOf(' - ');
+      title = s.slice(0, idx);
+      artist = s.slice(idx + 3);
+    }
+    const div = document.createElement('div');
+    div.className = 'song';
+    div.innerHTML = `<span class="song-title">${title}</span><span class="song-artist">${artist}</span>`;
+    container.appendChild(div);
+  });
+}
 
-                // Update History List
-                let historyList = document.getElementById("historyList");
-                historyList.innerHTML = "";
-                if (data.alreadyPlayed && data.alreadyPlayed.length > 0) {
-                    data.alreadyPlayed.forEach(song => {
-                        let li = document.createElement("li");
-                        li.innerText = song;
-                        historyList.appendChild(li);
-                    });
-                } else {
-                    historyList.innerHTML = "<li>No songs played yet.</li>";
-                }
-            } catch (err) {
-                console.error("Failed to sync song state", err);
-            }
-        }
+async function fetchSongs() {
+  try {
+    const res = await fetch(BIN_URL);
+    const json = await res.json();
+    const data = json.record;
 
-        // Fetch immediately, then poll every 4 seconds
-        fetchSongState();
-        setInterval(fetchSongState, 4000);
-    </script>
+    const contentDiv = document.getElementById('content');
+    contentDiv.innerHTML = ''; 
+
+    if (data.nowPlaying && data.nowPlaying.length > 0) {
+      renderSection(contentDiv, 'now playing', data.nowPlaying);
+    } else {
+      contentDiv.innerHTML += '<h2>now playing</h2><div class="song"><span class="song-title">Nothing playing</span></div>';
+    }
+
+    renderSection(contentDiv, 'already played', data.alreadyPlayed || []);
+  } catch (err) {
+    console.error("Failed to fetch state:", err);
+  }
+}
+
+fetchSongs();
+setInterval(fetchSongs, 5000); 
+</script>
+
 </body>
 </html>
