@@ -1,0 +1,51 @@
+‎<!DOCTYPE html>
+‎<html lang="en">
+‎<head>
+‎<meta charset="UTF-8">
+‎<meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎<title>novascotia's setlist</title>
+‎<style>
+‎  body {
+‎    background: #111;
+‎    color: #eee;
+‎    font-family: sans-serif;
+‎    max-width: 500px;
+‎    margin: 60px auto;
+‎    padding: 0 20px;
+‎  }
+‎  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: #fff; }
+‎  .song { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
+‎  .song-title { color: #fff; }
+‎  .song-artist { color: #888; }
+‎</style>
+‎</head>
+‎<body>
+‎
+‎<h1>novascotia's song list 🎸</h1>
+‎<div id="list"></div>
+‎
+‎<script>
+‎// ── EDIT YOUR SONGS HERE ──────────────────────
+‎const songs = [
+‎  "I'll be friends with you - arash buana [guitar]",
+‎  "Sudah - Ardhito Pramono [guitar] ",
+‎  "First Love - Ardhito Pramono [guitar]",
+‎  "Falling Behind - Laufey [guitar]",
+‎  "Let you break my heart again - Laufey [karaoke]",
+‎  "Promise - Laufey [karaoke]",
+‎  "Bored - Laufey [karaoke]",
+‎  "Sunshine - The Panturas [guitar]",
+‎  "Walking back home - Vira Talisa [guitar]",
+‎];
+‎// ─────────────────────────────────────────────
+‎
+‎const list = document.getElementById('list');
+‎songs.forEach(s => {
+‎  const [title, artist] = s.split(' - ');
+‎  list.innerHTML += `<div class="song"><span class="song-title">${title}</span><span class="song-artist">${artist}</span></div>`;
+‎});
+‎</script>
+‎
+‎</body>
+‎</html>
+‎
