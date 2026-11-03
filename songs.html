@@ -1,67 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>novascotia's setlist</title>
-<style>
-  body {
-    background: #111;
-    color: #eee;
-    font-family: sans-serif;
-    max-width: 500px;
-    margin: 60px auto;
-    padding: 0 20px 40px;
-  }
-  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 32px; color: #fff; }
-  h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin: 28px 0 4px; }
-  .song { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
-  .song-title { color: #fff; }
-  .song-artist { color: #888; text-align: right; }
-</style>
+    <meta charset="UTF-8">
+    <title>Live Music Status</title>
+    <style>
+        body { font-family: sans-serif; background: #0f0f0f; color: #fff; padding: 2rem; max-width: 600px; margin: auto; }
+        .card { background: #1a1a1a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #1db954; }
+        ul { padding-left: 20px; color: #aaa; }
+    </style>
 </head>
 <body>
+    <h1>Live Now Playing</h1>
+    
+    <div class="card">
+        <h3>🎵 Now Playing</h3>
+        <p id="currentSong">Loading...</p>
+    </div>
 
-<h1>novascotia's song list 🎸</h1>
+    <div>
+        <h3>📜 Already Played</h3>
+        <ul id="historyList">
+            <li>Loading history...</li>
+        </ul>
+    </div>
 
-<script>
-// ── GUITAR ────────────────────────────────────
-const guitar = [
-  "I'll be friends with you - arash buana",
-  "Sudah - Ardhito Pramono",
-  "First Love - Ardhito Pramono",
-  "Falling Behind - Laufey",
-  "Sunshine - The Panturas",
-  "Walking back home - Vira Talisa",
-];
+    <script>
+        const BIN_URL_READ = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
 
-// ── KARAOKE ───────────────────────────────────
-const karaoke = [
-  "Let you break my heart again - Laufey",
-  "Promise - Laufey",
-  "Bored - Laufey",
-];
-// ─────────────────────────────────────────────
+        async function fetchSongState() {
+            try {
+                let res = await fetch(BIN_URL_READ);
+                let json = await res.json();
+                let data = json.record;
 
-function renderSection(label, songs) {
-  const h2 = document.createElement('h2');
-  h2.textContent = label;
-  document.body.appendChild(h2);
+                // Update Now Playing
+                document.getElementById("currentSong").innerText = data.nowPlaying || "Nothing playing";
 
-  songs.forEach(s => {
-    const idx = s.indexOf(' - ');
-    const title = s.slice(0, idx);
-    const artist = s.slice(idx + 3);
-    const div = document.createElement('div');
-    div.className = 'song';
-    div.innerHTML = `<span class="song-title">${title}</span><span class="song-artist">${artist}</span>`;
-    document.body.appendChild(div);
-  });
-}
+                // Update History List
+                let historyList = document.getElementById("historyList");
+                historyList.innerHTML = "";
+                if (data.alreadyPlayed && data.alreadyPlayed.length > 0) {
+                    data.alreadyPlayed.forEach(song => {
+                        let li = document.createElement("li");
+                        li.innerText = song;
+                        historyList.appendChild(li);
+                    });
+                } else {
+                    historyList.innerHTML = "<li>No songs played yet.</li>";
+                }
+            } catch (err) {
+                console.error("Failed to sync song state", err);
+            }
+        }
 
-renderSection('played on guitar', guitar);
-renderSection('played with instrumental', karaoke);
-</script>
-
+        // Fetch immediately, then poll every 4 seconds
+        fetchSongState();
+        setInterval(fetchSongState, 4000);
+    </script>
 </body>
 </html>
