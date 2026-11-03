@@ -29,7 +29,7 @@
     text-transform: uppercase;
   }
   .badge-now { background: #1db954; color: #000; }
-  .badge-played { background: #222; color: #777; border: 1px solid #333; }
+  .badge-played { background: #333; color: #aaa; border: 1px solid #444; }
   
   .now-playing-item { border-bottom: 1px solid #333; padding: 12px 0; }
   .now-playing-item .song-title { color: #1db954; font-weight: bold; }
@@ -85,7 +85,7 @@ function rendersection(container, label, songlist, badgetype = null) {
       badgehtml = `<span class="status-badge badge-now">Now Playing</span>`;
     } else if (badgetype === 'played') {
       div.className = 'song';
-      badgehtml = `<span class="status-badge badge-played">Played</span>`;
+      badgehtml = `<span class="status-badge badge-played">Already Played</span>`;
     } else {
       div.className = 'song';
     }
@@ -103,7 +103,7 @@ function rendersection(container, label, songlist, badgetype = null) {
 
 async function fetchsetlist() {
   try {
-    const res = await fetch(apiurl);
+    const res = await fetch(`${apiurl}?t=${Date.now()}`);
     if (!res.ok) return;
     const store = await res.json();
 
