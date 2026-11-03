@@ -18,65 +18,102 @@
   .song { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
   .song-title { color: #fff; }
   .song-artist { color: #888; text-align: right; }
-  #content { margin-top: 10px; }
+  .now-playing-item { border-bottom: 1px solid #333; padding: 12px 0; }
+  .now-playing-item .song-title { color: #1db954; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<h1>novascotia's live setlist 🎸</h1>
-<div id="content">
-  <div class="song"><span class="song-title">Loading...</span></div>
+<h1>novascotia's song list 🎸</h1>
+<div id="setlistcontent">
+  <div class="song"><span class="song-title">Loading live setlist...</span></div>
 </div>
 
 <script>
-// Replace with your actual JSONBin ID
-const BIN_URL = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
+const binurl = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID/latest";
 
-function renderSection(container, label, songs) {
-  if (!songs || songs.length === 0) return;
-  
+const defaultguitar = [
+  "I'll be friends with you - arash buana",
+  "Sudah - Ardhito Pramono",
+  "First Love - Ardhito Pramono",
+  "Falling Behind - Laufey",
+  "Sunshine - The Panturas",
+  "Walking back home - Vira Talisa"
+];
+
+const defaultkaraoke = [
+  "Let you break my heart again - Laufey",
+  "Promise - Laufey",
+  "Bored - Laufey"
+];
+
+function parsesong(s) {
+  const idx = s.indexOf(' - ');
+  if (idx === -1) return { title: s, artist: "" };
+  return {
+    title: s.slice(0, idx),
+    artist: s.slice(idx + 3)
+  };
+}
+
+function rendersection(container, label, songlist, isnowplaying = false) {
+  if (!songlist || songlist.length === 0) return;
   const h2 = document.createElement('h2');
   h2.textContent = label;
   container.appendChild(h2);
 
-  songs.forEach(s => {
-    let title = s;
-    let artist = "";
-    if (s.includes(' - ')) {
-      const idx = s.indexOf(' - ');
-      title = s.slice(0, idx);
-      artist = s.slice(idx + 3);
-    }
+  songlist.forEach(s => {
+    const parsed = parsesong(s);
     const div = document.createElement('div');
-    div.className = 'song';
-    div.innerHTML = `<span class="song-title">${title}</span><span class="song-artist">${artist}</span>`;
+    div.className = isnowplaying ? 'song now-playing-item' : 'song';
+    div.innerHTML = `<span class="song-title">${parsed.title}</span><span class="song-artist">${parsed.artist}</span>`;
     container.appendChild(div);
   });
 }
 
-async function fetchSongs() {
+async function fetchsetlist() {
   try {
-    const res = await fetch(BIN_URL);
+    const res = await fetch(binurl);
     const json = await res.json();
-    const data = json.record;
+    const store = json.record || {};
 
-    const contentDiv = document.getElementById('content');
-    contentDiv.innerHTML = ''; 
+    const states = store.states || {};
+    const customguitar = store.guitar || defaultguitar;
+    const customkaraoke = store.karaoke || defaultkaraoke;
 
-    if (data.nowPlaying && data.nowPlaying.length > 0) {
-      renderSection(contentDiv, 'now playing', data.nowPlaying);
-    } else {
-      contentDiv.innerHTML += '<h2>now playing</h2><div class="song"><span class="song-title">Nothing playing</span></div>';
-    }
+    const nowplaying = [];
+    const alreadyplayed = [];
+    const guitarnormal = [];
+    const karaokenormal = [];
 
-    renderSection(contentDiv, 'already played', data.alreadyPlayed || []);
+    customguitar.forEach(s => {
+      const st = states[s] || "normal";
+      if (st === "now_playing") nowplaying.push(s);
+      else if (st === "already_played") alreadyplayed.push(s);
+      else guitarnormal.push(s);
+    });
+
+    customkaraoke.forEach(s => {
+      const st = states[s] || "normal";
+      if (st === "now_playing") nowplaying.push(s);
+      else if (st === "already_played") alreadyplayed.push(s);
+      else karaokenormal.push(s);
+    });
+
+    const container = document.getElementById('setlistcontent');
+    container.innerHTML = '';
+
+    rendersection(container, 'now playing', nowplaying, true);
+    rendersection(container, 'already played', alreadyplayed);
+    rendersection(container, 'played on guitar', guitarnormal);
+    rendersection(container, 'played with instrumental', karaokenormal);
   } catch (err) {
-    console.error("Failed to fetch state:", err);
+    console.error("sync error:", err);
   }
 }
 
-fetchSongs();
-setInterval(fetchSongs, 5000); 
+fetchsetlist();
+setInterval(fetchsetlist, 4000);
 </script>
 
 </body>
