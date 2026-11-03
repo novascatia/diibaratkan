@@ -28,8 +28,13 @@ export default async function handler(req, res) {
       }
 
       const latestblob = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
+      
+      // Ambil file private menggunakan BLOB_READ_WRITE_TOKEN
       const response = await fetch(`${latestblob.url}?t=${Date.now()}`, {
-        cache: 'no-store'
+        headers: {
+          'Cache-Control': 'no-cache',
+          Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+        }
       });
 
       if (!response.ok) return res.status(200).json(defaultdata);
@@ -44,9 +49,9 @@ export default async function handler(req, res) {
     try {
       const bodydata = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       
-      // Izinkan overwrite langsung ke setlist.json
+      // Menggunakan mode 'private' sesuai store di Vercel
       await put('setlist.json', JSON.stringify(bodydata), {
-        access: 'public',
+        access: 'private',
         addRandomSuffix: false,
         allowOverwrite: true
       });
