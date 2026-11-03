@@ -60,8 +60,7 @@
 <button class="reset-all" onclick="resetallstates()">Reset All States to Normal</button>
 
 <script>
-const binurl = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID";
-const apikey = "YOUR_MASTER_KEY";
+const apiurl = "/api/setlist";
 
 const defaultguitar = [
   "I'll be friends with you - arash buana",
@@ -94,10 +93,10 @@ function parsesong(s) {
 
 async function loadstore() {
   try {
-    const res = await fetch(`${binurl}/latest`, { headers: { "X-Master-Key": apikey } });
+    const res = await fetch(apiurl);
     const json = await res.json();
-    if (json.record && json.record.guitar) {
-      currentstore = json.record;
+    if (json && json.guitar) {
+      currentstore = json;
     }
     rendereditlist();
   } catch (err) {
@@ -108,9 +107,9 @@ async function loadstore() {
 async function savestore() {
   showstatus("Saving...");
   try {
-    await fetch(binurl, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Master-Key": apikey },
+    await fetch(apiurl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(currentstore)
     });
     showstatus("Saved!");
