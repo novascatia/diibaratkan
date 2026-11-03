@@ -116,10 +116,11 @@ async function savestore() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(currentstore)
     });
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
       showstatus("Saved!");
     } else {
-      showstatus("Save failed.");
+      showstatus(`Save failed: ${json.error || res.statusText}`);
     }
     rendereditlist();
   } catch (err) {
