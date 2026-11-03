@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>edit song state</title>
+<title>novascatia's song manager</title>
 <style>
   body {
     background: #111;
@@ -38,7 +38,7 @@
 </head>
 <body>
 
-<h1>song manager 🎸</h1>
+<h1>novascatia's song manager 🎸</h1>
 
 <div class="add-box">
   <h2>Add New Song</h2>
@@ -94,6 +94,10 @@ function parsesong(s) {
 async function loadstore() {
   try {
     const res = await fetch(apiurl);
+    if (!res.ok) {
+      showstatus("Failed to load store.");
+      return;
+    }
     const json = await res.json();
     if (json && json.guitar) {
       currentstore = json;
