@@ -1,4 +1,4 @@
-import { put, list } from '@vercel/blob';
+import { put, list, del } from '@vercel/blob';
 
 const defaultdata = {
   guitar: [
@@ -22,14 +22,14 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const { blobs } = await list({ prefix: 'setlist.json' });
+      const { blobs } = await list({ prefix: 'setlist' });
       if (!blobs || blobs.length === 0) {
         return res.status(200).json(defaultdata);
       }
 
-      const latestBlob = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
-      const response = await fetch(`${latestBlob.url}?t=${Date.now()}`, {
-        headers: { 'Cache-Control': 'no-cache' }
+      const latestblob = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
+      const response = await fetch(`${latestblob.url}?t=${Date.now()}`, {
+        cache: 'no-store'
       });
 
       if (!response.ok) return res.status(200).json(defaultdata);
@@ -43,12 +43,25 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const bodydata = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      await put('setlist.json', JSON.stringify(bodydata), {
+      
+      const newblob = await put('setlist.json', JSON.stringify(bodydata), {
         access: 'public',
-        addRandomSuffix: false
+        addRandomSuffix: true
       });
+
+      try {
+        const { blobs } = await list({ prefix: 'setlist' });
+        const oldblobs = blobs.filter(b => b.url !== newblob.url);
+        if (oldblobs.length > 0) {
+          await del(oldblobs.map(b => b.url));
+        }
+      } catch (e) {
+        console.error("Cleanup error:", e);
+      }
+
       return res.status(200).json({ success: true });
     } catch (err) {
+      console.error("Save error:", err);
       return res.status(500).json({ error: 'Gagal menyimpan data ke Vercel Blob' });
     }
   }
