@@ -23,17 +23,17 @@
   
   .btn-group { display: flex; gap: 6px; }
   .btn-group button {
-    flex: 1; padding: 6px; background: #222; color: #888; border: 1px solid #333;
-    font-size: 0.75rem; cursor: pointer; border-radius: 3px;
+    flex: 1; padding: 8px; background: #222; color: #888; border: 1px solid #333;
+    font-size: 0.75rem; cursor: pointer; border-radius: 3px; font-weight: 500;
   }
   .btn-group button.active-now { background: #1db954; color: #000; font-weight: bold; border-color: #1db954; }
-  .btn-group button.active-played { background: #555; color: #fff; border-color: #555; }
+  .btn-group button.active-played { background: #555; color: #fff; border-color: #555; font-weight: bold; }
   
   .add-box { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
   input, select { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; font-size: 0.9rem; outline: none; }
   button.action-btn { background: #eee; color: #111; font-weight: bold; border: none; padding: 10px; cursor: pointer; margin-top: 6px; }
   button.reset-all { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; margin-top: 32px; width: 100%; padding: 10px; cursor: pointer; }
-  #status { font-size: 0.8rem; color: #1db954; margin-top: 12px; text-align: center; }
+  #status { font-size: 0.8rem; color: #1db954; margin-top: 12px; text-align: center; height: 16px; }
 </style>
 </head>
 <body>
@@ -93,7 +93,7 @@ function parsesong(s) {
 
 async function loadstore() {
   try {
-    const res = await fetch(apiurl);
+    const res = await fetch(`${apiurl}?t=${Date.now()}`);
     if (!res.ok) {
       showstatus("Failed to load store.");
       return;
@@ -111,19 +111,29 @@ async function loadstore() {
 async function savestore() {
   showstatus("Saving...");
   try {
-    await fetch(apiurl, {
+    const res = await fetch(apiurl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(currentstore)
     });
-    showstatus("Saved!");
+    if (res.ok) {
+      showstatus("Saved!");
+    } else {
+      showstatus("Save failed.");
+    }
     rendereditlist();
   } catch (err) {
-    showstatus("Save failed.");
+    showstatus("Save error.");
   }
 }
 
-function setsongstate(songstr, stateval) {
+function setsongstate(category, index, stateval) {
+  const songlist = currentstore[category];
+  if (!songlist || !songlist[index]) return;
+  const songstr = songlist[index];
+
+  if (!currentstore.states) currentstore.states = {};
+
   if (stateval === "now_playing") {
     for (let key in currentstore.states) {
       if (currentstore.states[key] === "now_playing") {
@@ -136,6 +146,8 @@ function setsongstate(songstr, stateval) {
   } else {
     currentstore.states[songstr] = stateval;
   }
+
+  rendereditlist();
   savestore();
 }
 
@@ -144,11 +156,11 @@ function addsong() {
   const artistel = document.getElementById('newartist');
   const catel = document.getElementById('newcategory');
 
-  const songname = artistel.value.trim() 
-    ? `${titleel.value.trim()} - ${artistel.value.trim()}`
-    : titleel.value.trim();
+  const title = titleel.value.trim();
+  const artist = artistel.value.trim();
+  if (!title) return showstatus("Enter song title.");
 
-  if (!titleel.value.trim()) return showstatus("Enter song title.");
+  const songname = artist ? `${title} - ${artist}` : title;
 
   if (catel.value === "guitar") {
     currentstore.guitar.push(songname);
@@ -158,23 +170,28 @@ function addsong() {
 
   titleel.value = "";
   artistel.value = "";
+  rendereditlist();
   savestore();
 }
 
 function resetallstates() {
   if (!confirm("Reset all song states back to normal?")) return;
   currentstore.states = {};
+  rendereditlist();
   savestore();
 }
 
-function rendercategoryrows(container, label, list) {
+function rendercategoryrows(container, label, categoryKey) {
+  const list = currentstore[categoryKey] || [];
+  if (list.length === 0) return;
+
   const h2 = document.createElement('h2');
   h2.textContent = label;
   container.appendChild(h2);
 
-  list.forEach(s => {
+  list.forEach((s, idx) => {
     const parsed = parsesong(s);
-    const st = currentstore.states[s] || "normal";
+    const st = (currentstore.states && currentstore.states[s]) ? currentstore.states[s] : "normal";
 
     const div = document.createElement('div');
     div.className = 'song-row';
@@ -184,9 +201,9 @@ function rendercategoryrows(container, label, list) {
         <span class="song-artist">${parsed.artist}</span>
       </div>
       <div class="btn-group">
-        <button class="${st === 'now_playing' ? 'active-now' : ''}" onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'now_playing')">Now Playing</button>
-        <button class="${st === 'already_played' ? 'active-played' : ''}" onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'already_played')">Already Played</button>
-        <button onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'normal')">Reset State</button>
+        <button class="${st === 'now_playing' ? 'active-now' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'now_playing')">Now Playing</button>
+        <button class="${st === 'already_played' ? 'active-played' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'already_played')">Already Played</button>
+        <button class="${st === 'normal' ? 'active-normal' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'normal')">Reset State</button>
       </div>
     `;
     container.appendChild(div);
@@ -196,8 +213,8 @@ function rendercategoryrows(container, label, list) {
 function rendereditlist() {
   const container = document.getElementById('editlist');
   container.innerHTML = '';
-  rendercategoryrows(container, 'guitar songs', currentstore.guitar);
-  rendercategoryrows(container, 'instrumental songs', currentstore.karaoke);
+  rendercategoryrows(container, 'guitar songs', 'guitar');
+  rendercategoryrows(container, 'instrumental songs', 'karaoke');
 }
 
 loadstore();
