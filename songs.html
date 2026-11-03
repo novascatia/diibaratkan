@@ -15,9 +15,22 @@
   }
   h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 32px; color: #fff; }
   h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin: 28px 0 4px; }
-  .song { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
+  .song { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
+  .song-title-box { display: flex; align-items: center; gap: 8px; }
   .song-title { color: #fff; }
   .song-artist { color: #888; text-align: right; }
+  
+  .status-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge-now { background: #1db954; color: #000; }
+  .badge-played { background: #222; color: #777; border: 1px solid #333; }
+  
   .now-playing-item { border-bottom: 1px solid #333; padding: 12px 0; }
   .now-playing-item .song-title { color: #1db954; font-weight: bold; }
 </style>
@@ -56,7 +69,7 @@ function parsesong(s) {
   };
 }
 
-function rendersection(container, label, songlist, isnowplaying = false) {
+function rendersection(container, label, songlist, badgetype = null) {
   if (!songlist || songlist.length === 0) return;
   const h2 = document.createElement('h2');
   h2.textContent = label;
@@ -65,8 +78,25 @@ function rendersection(container, label, songlist, isnowplaying = false) {
   songlist.forEach(s => {
     const parsed = parsesong(s);
     const div = document.createElement('div');
-    div.className = isnowplaying ? 'song now-playing-item' : 'song';
-    div.innerHTML = `<span class="song-title">${parsed.title}</span><span class="song-artist">${parsed.artist}</span>`;
+    
+    let badgehtml = '';
+    if (badgetype === 'now') {
+      div.className = 'song now-playing-item';
+      badgehtml = `<span class="status-badge badge-now">Now Playing</span>`;
+    } else if (badgetype === 'played') {
+      div.className = 'song';
+      badgehtml = `<span class="status-badge badge-played">Played</span>`;
+    } else {
+      div.className = 'song';
+    }
+
+    div.innerHTML = `
+      <div class="song-title-box">
+        <span class="song-title">${parsed.title}</span>
+        ${badgehtml}
+      </div>
+      <span class="song-artist">${parsed.artist}</span>
+    `;
     container.appendChild(div);
   });
 }
@@ -74,6 +104,7 @@ function rendersection(container, label, songlist, isnowplaying = false) {
 async function fetchsetlist() {
   try {
     const res = await fetch(apiurl);
+    if (!res.ok) return;
     const store = await res.json();
 
     const states = store.states || {};
@@ -102,8 +133,8 @@ async function fetchsetlist() {
     const container = document.getElementById('setlistcontent');
     container.innerHTML = '';
 
-    rendersection(container, 'now playing', nowplaying, true);
-    rendersection(container, 'already played', alreadyplayed);
+    rendersection(container, 'now playing', nowplaying, 'now');
+    rendersection(container, 'already played', alreadyplayed, 'played');
     rendersection(container, 'played on guitar', guitarnormal);
     rendersection(container, 'played with instrumental', karaokenormal);
   } catch (err) {
