@@ -1,63 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Song Editor - Diibaratkan</title>
-    <style>
-        body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; max-width: 500px; margin: auto; }
-        input, button { width: 100%; padding: 10px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        button { background: #1db954; font-weight: bold; cursor: pointer; }
-        button.reset { background: #e74c3c; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>edit song state</title>
+<style>
+  body {
+    background: #111;
+    color: #eee;
+    font-family: sans-serif;
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 0 20px 40px;
+  }
+  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 24px; color: #fff; }
+  h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin: 28px 0 12px; }
+  
+  .song-row { display: flex; flex-direction: column; gap: 8px; padding: 10px 0; border-bottom: 1px solid #222; }
+  .song-info { display: flex; justify-content: space-between; font-size: 0.95rem; }
+  .song-title { color: #fff; }
+  .song-artist { color: #888; }
+  
+  .btn-group { display: flex; gap: 6px; }
+  .btn-group button {
+    flex: 1; padding: 6px; background: #222; color: #888; border: 1px solid #333;
+    font-size: 0.75rem; cursor: pointer; border-radius: 3px;
+  }
+  .btn-group button.active-now { background: #1db954; color: #000; font-weight: bold; border-color: #1db954; }
+  .btn-group button.active-played { background: #555; color: #fff; border-color: #555; }
+  
+  .add-box { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  input, select { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; font-size: 0.9rem; outline: none; }
+  button.action-btn { background: #eee; color: #111; font-weight: bold; border: none; padding: 10px; cursor: pointer; margin-top: 6px; }
+  button.reset-all { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; margin-top: 32px; width: 100%; padding: 10px; cursor: pointer; }
+  #status { font-size: 0.8rem; color: #1db954; margin-top: 12px; text-align: center; }
+</style>
 </head>
 <body>
-    <h2>Song Control Panel</h2>
-    <label>Now Playing Title:</label>
-    <input type="text" id="nowPlayingInput" placeholder="e.g. Song Name - Artist">
-    <button onclick="updateSong()">Update Now Playing</button>
-    
-    <button class="reset" onclick="resetState()">Reset Everything</button>
 
-    <script>
-        const BIN_URL = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID"; // Replace with your JSONBin or storage API
-        const API_KEY = "YOUR_MASTER_KEY";
+<h1>song manager 🎸</h1>
 
-        async function updateSong() {
-            const title = document.getElementById("nowPlayingInput").value;
-            
-            // 1. Fetch current data to push old track to history
-            let res = await fetch(BIN_URL, { headers: { "X-Master-Key": API_KEY } });
-            let data = (await res.json()).record;
+<div class="add-box">
+  <h2>Add New Song</h2>
+  <input type="text" id="newtitle" placeholder="Song Title">
+  <input type="text" id="newartist" placeholder="Artist Name">
+  <select id="newcategory">
+    <option value="guitar">Played on guitar</option>
+    <option value="karaoke">Played with instrumental</option>
+  </select>
+  <button class="action-btn" onclick="addsong()">Add Song</button>
+</div>
 
-            let history = data.alreadyPlayed || [];
-            if (data.nowPlaying) {
-                history.unshift(data.nowPlaying); // Add previous track to top of history
-            }
+<div id="status"></div>
 
-            // 2. Save new state
-            let newState = {
-                nowPlaying: title,
-                alreadyPlayed: history
-            };
+<div id="editlist">
+  <h2>Loading songs...</h2>
+</div>
 
-            await fetch(BIN_URL, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-                body: JSON.stringify(newState)
-            });
+<button class="reset-all" onclick="resetallstates()">Reset All States to Normal</button>
 
-            alert("Updated successfully!");
-        }
+<script>
+const binurl = "https://api.jsonbin.io/v3/b/YOUR_BIN_ID";
+const apikey = "YOUR_MASTER_KEY";
 
-        async function resetState() {
-            let newState = { nowPlaying: "Nothing playing right now", alreadyPlayed: [] };
-            await fetch(BIN_URL, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-                body: JSON.stringify(newState)
-            });
-            alert("Reset state applied!");
-        }
-    </script>
+const defaultguitar = [
+  "I'll be friends with you - arash buana",
+  "Sudah - Ardhito Pramono",
+  "First Love - Ardhito Pramono",
+  "Falling Behind - Laufey",
+  "Sunshine - The Panturas",
+  "Walking back home - Vira Talisa"
+];
+
+const defaultkaraoke = [
+  "Let you break my heart again - Laufey",
+  "Promise - Laufey",
+  "Bored - Laufey"
+];
+
+let currentstore = { guitar: defaultguitar, karaoke: defaultkaraoke, states: {} };
+
+function showstatus(msg) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = ""; }, 2500);
+}
+
+function parsesong(s) {
+  const idx = s.indexOf(' - ');
+  if (idx === -1) return { title: s, artist: "" };
+  return { title: s.slice(0, idx), artist: s.slice(idx + 3) };
+}
+
+async function loadstore() {
+  try {
+    const res = await fetch(`${binurl}/latest`, { headers: { "X-Master-Key": apikey } });
+    const json = await res.json();
+    if (json.record && json.record.guitar) {
+      currentstore = json.record;
+    }
+    rendereditlist();
+  } catch (err) {
+    showstatus("Failed to load backend state.");
+  }
+}
+
+async function savestore() {
+  showstatus("Saving...");
+  try {
+    await fetch(binurl, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Master-Key": apikey },
+      body: JSON.stringify(currentstore)
+    });
+    showstatus("Saved!");
+    rendereditlist();
+  } catch (err) {
+    showstatus("Save failed.");
+  }
+}
+
+function setsongstate(songstr, stateval) {
+  if (stateval === "now_playing") {
+    for (let key in currentstore.states) {
+      if (currentstore.states[key] === "now_playing") {
+        currentstore.states[key] = "already_played";
+      }
+    }
+    currentstore.states[songstr] = "now_playing";
+  } else if (stateval === "normal") {
+    delete currentstore.states[songstr];
+  } else {
+    currentstore.states[songstr] = stateval;
+  }
+  savestore();
+}
+
+function addsong() {
+  const titleel = document.getElementById('newtitle');
+  const artistel = document.getElementById('newartist');
+  const catel = document.getElementById('newcategory');
+
+  const songname = artistel.value.trim() 
+    ? `${titleel.value.trim()} - ${artistel.value.trim()}`
+    : titleel.value.trim();
+
+  if (!titleel.value.trim()) return showstatus("Enter song title.");
+
+  if (catel.value === "guitar") {
+    currentstore.guitar.push(songname);
+  } else {
+    currentstore.karaoke.push(songname);
+  }
+
+  titleel.value = "";
+  artistel.value = "";
+  savestore();
+}
+
+function resetallstates() {
+  if (!confirm("Reset all song states back to normal?")) return;
+  currentstore.states = {};
+  savestore();
+}
+
+function rendercategoryrows(container, label, list) {
+  const h2 = document.createElement('h2');
+  h2.textContent = label;
+  container.appendChild(h2);
+
+  list.forEach(s => {
+    const parsed = parsesong(s);
+    const st = currentstore.states[s] || "normal";
+
+    const div = document.createElement('div');
+    div.className = 'song-row';
+    div.innerHTML = `
+      <div class="song-info">
+        <span class="song-title">${parsed.title}</span>
+        <span class="song-artist">${parsed.artist}</span>
+      </div>
+      <div class="btn-group">
+        <button class="${st === 'now_playing' ? 'active-now' : ''}" onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'now_playing')">Now Playing</button>
+        <button class="${st === 'already_played' ? 'active-played' : ''}" onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'already_played')">Already Played</button>
+        <button onclick="setsongstate('${s.replace(/'/g, "\\'")}', 'normal')">Reset State</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function rendereditlist() {
+  const container = document.getElementById('editlist');
+  container.innerHTML = '';
+  rendercategoryrows(container, 'guitar songs', currentstore.guitar);
+  rendercategoryrows(container, 'instrumental songs', currentstore.karaoke);
+}
+
+loadstore();
+</script>
+
 </body>
 </html>
