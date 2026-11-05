@@ -28,6 +28,8 @@
   }
   .btn-group button.active-now { background: #1db954; color: #000; font-weight: bold; border-color: #1db954; }
   .btn-group button.active-played { background: #555; color: #fff; border-color: #555; font-weight: bold; }
+  .btn-group button.btn-delete { background: transparent; color: #e74c3c; border-color: #442222; flex: 0 0 auto; padding: 8px 12px; }
+  .btn-group button.btn-delete:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; }
   
   .add-box { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
   input, select { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; font-size: 0.9rem; outline: none; }
@@ -152,6 +154,23 @@ function setsongstate(category, index, stateval) {
   savestore();
 }
 
+function deletesong(category, index) {
+  const songlist = currentstore[category];
+  if (!songlist || !songlist[index]) return;
+  const songstr = songlist[index];
+
+  if (!confirm(`Delete "${songstr}" from setlist?`)) return;
+
+  currentstore[category].splice(index, 1);
+
+  if (currentstore.states && currentstore.states[songstr]) {
+    delete currentstore.states[songstr];
+  }
+
+  rendereditlist();
+  savestore();
+}
+
 function addsong() {
   const titleel = document.getElementById('newtitle');
   const artistel = document.getElementById('newartist');
@@ -205,6 +224,7 @@ function rendercategoryrows(container, label, categoryKey) {
         <button class="${st === 'now_playing' ? 'active-now' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'now_playing')">Now Playing</button>
         <button class="${st === 'already_played' ? 'active-played' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'already_played')">Already Played</button>
         <button class="${st === 'normal' ? 'active-normal' : ''}" onclick="setsongstate('${categoryKey}', ${idx}, 'normal')">Reset State</button>
+        <button class="btn-delete" onclick="deletesong('${categoryKey}', ${idx})">Delete</button>
       </div>
     `;
     container.appendChild(div);
