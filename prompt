@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Love - Chord & Lyric Teleprompter</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e2e8f0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .chord-font {
+            font-family: 'JetBrains Mono', monospace;
+            white-space: pre;
+        }
+
+        /* Slide Transition Animations */
+        .slide-container {
+            transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+        }
+
+        .slide-enter {
+            opacity: 0;
+            transform: scale(0.98) translateY(10px);
+        }
+
+        .slide-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+
+        /* Pulse highlight for chord display */
+        .chord-text {
+            color: #fbbf24; /* Amber 400 */
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-[#121212] text-slate-200">
+
+    <!-- Top Navigation & Controls Header -->
+    <header class="bg-[#18181c]/90 backdrop-blur border-b border-zinc-800/80 px-4 py-3 z-20 flex items-center justify-between shadow-lg flex-wrap gap-2">
+        <!-- Left: Song Title & Artist -->
+        <div class="flex items-center space-x-3">
+            <button id="open-songs-btn" class="p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-2 text-xs font-medium border border-zinc-700/50" title="Song List / Import">
+                <i data-lucide="music" class="w-4 h-4 text-amber-400"></i>
+                <span class="hidden sm:inline">Songs</span>
+            </button>
+            <div>
+                <h1 id="song-title-display" class="font-bold text-base sm:text-lg text-white leading-tight tracking-wide">First Love</h1>
+                <p id="song-artist-display" class="text-xs text-zinc-400 font-medium">Nikka Costa</p>
+            </div>
+        </div>
+
+        <!-- Center: Auto-Progress Listening Controls & Status -->
+        <div class="flex items-center gap-2 flex-wrap justify-center">
+            <!-- Listening Mode Selector -->
+            <div class="flex items-center bg-zinc-900/90 rounded-xl p-1 border border-zinc-800 text-xs">
+                <button id="toggle-listen-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white transition font-medium">
+                    <span id="mic-dot" class="w-2.5 h-2.5 rounded-full bg-zinc-600"></span>
+                    <span id="listen-btn-label">Auto-Progress Off</span>
+                </button>
+                <select id="listen-mode-select" class="bg-transparent text-zinc-300 text-xs px-2 py-1 focus:outline-none cursor-pointer font-medium border-l border-zinc-800 ml-1">
+                    <option value="speech" class="bg-zinc-900 text-zinc-200">Mode: Voice / Lyrics</option>
+                    <option value="audio" class="bg-zinc-900 text-zinc-200">Mode: Strum Energy Peak</option>
+                </select>
+            </div>
+
+            <!-- Sensitivity Modal Trigger -->
+            <button id="sensitivity-btn" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 border border-zinc-800 transition" title="Adjust Mic & Detection Sensitivity">
+                <i data-lucide="sliders" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Center Right: Key & Transpose Controls -->
+        <div class="flex items-center bg-zinc-900/90 rounded-xl p-1 border border-zinc-800 shadow-inner">
+            <button id="transpose-down" class="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 transition" title="Transpose Down (-1 Semitone)">
+                <i data-lucide="minus" class="w-4 h-4"></i>
+            </button>
+            <div class="px-3 text-center min-w-[65px]">
+                <span class="text-[9px] uppercase tracking-wider text-zinc-500 block font-semibold">KEY</span>
+                <span id="current-key-display" class="text-xs font-bold text-amber-400 font-mono">G</span>
+                <span id="transpose-offset" class="text-[10px] text-zinc-400 font-mono"></span>
+            </div>
+            <button id="transpose-up" class="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-amber-400 transition" title="Transpose Up (+1 Semitone)">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+            <button id="reset-transpose" class="ml-1 px-2 py-1 rounded-md text-[10px] font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 transition hidden" title="Reset Transposition">
+                RESET
+            </button>
+        </div>
+
+        <!-- Right: Presentation Settings & Section Menu -->
+        <div class="flex items-center space-x-2">
+            <!-- Text Size Adjustment -->
+            <div class="hidden sm:flex items-center bg-zinc-900 rounded-lg p-1 border border-zinc-800">
+                <button id="font-decrease" class="p-1.5 text-zinc-400 hover:text-white transition" title="Decrease Font Size">
+                    <i data-lucide="type" class="w-3.5 h-3.5"></i>
+                </button>
+                <button id="font-increase" class="p-1.5 text-zinc-400 hover:text-white transition" title="Increase Font Size">
+                    <i data-lucide="type" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Fullscreen Toggle -->
+            <button id="fullscreen-btn" class="p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition" title="Toggle Fullscreen (F)">
+                <i data-lucide="maximize" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Keyboard Shortcuts Button -->
+            <button id="shortcuts-btn" class="p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition" title="Keyboard Shortcuts">
+                <i data-lucide="keyboard" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Top Section Progress Bar -->
+    <div class="w-full bg-zinc-900 h-1.5 relative overflow-hidden">
+        <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-amber-300 h-full w-0 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
+    </div>
+
+    <!-- Live Audio & Speech Monitor Debug Bar -->
+    <div id="mic-monitor-bar" class="bg-zinc-950/90 border-b border-zinc-800/60 px-4 py-2 flex items-center justify-between text-xs gap-4 text-zinc-400 shadow-inner">
+        <!-- Audio VU Level Meter -->
+        <div class="flex items-center gap-2 min-w-[140px]">
+            <i data-lucide="mic" id="mic-icon" class="w-4 h-4 text-zinc-500"></i>
+            <span class="text-[11px] font-semibold text-zinc-400">AUDIO IN</span>
+            <div class="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden border border-zinc-700/50">
+                <div id="vu-meter-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75"></div>
+            </div>
+        </div>
+
+        <!-- Live Recognized Speech Transcript Display -->
+        <div class="flex-1 flex items-center gap-2 overflow-hidden px-3 py-1 bg-zinc-900/80 rounded-lg border border-zinc-800 font-mono text-[11px]">
+            <span class="text-amber-400 font-bold shrink-0">TRANSCRIPT:</span>
+            <span id="speech-transcript-text" class="text-zinc-300 truncate italic">Listening paused...</span>
+        </div>
+
+        <!-- System Detection Badges -->
+        <div class="hidden md:flex items-center gap-2 text-[10px]">
+            <span id="badge-speech-engine" class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">Speech Engine Ready</span>
+            <span id="badge-audio-engine" class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">Audio FFT Ready</span>
+        </div>
+    </div>
+
+    <!-- Main Teleprompter Display (Clickable area for advancing) -->
+    <main id="presentation-area" class="flex-1 flex flex-col justify-center items-center px-4 sm:px-12 py-6 relative cursor-pointer select-none">
+    <!-- Sensitivity Settings Modal -->
+    <div id="sensitivity-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-5 h-5 text-amber-400"></i>
+                    <h3 class="font-bold text-white text-base">Audio & Voice Sensitivity</h3>
+                </div>
+                <button id="close-sensitivity-modal" class="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-5">
+                <!-- Lyric Match Sensitivity Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-zinc-300">Lyric Match Sensitivity</label>
+                        <span id="speech-sensitivity-val" class="text-xs font-mono text-amber-400 font-bold">50%</span>
+                    </div>
+                    <input id="speech-sensitivity-slider" type="range" min="20" max="90" value="50" class="w-full accent-amber-400 cursor-pointer">
+                    <p class="text-[11px] text-zinc-500 mt-1">Controls how strictly recognized sung words must match the slide before advancing.</p>
+                </div>
+
+                <!-- Strum Peak Threshold Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-zinc-300">Strum Energy Peak Threshold</label>
+                        <span id="audio-threshold-val" class="text-xs font-mono text-amber-400 font-bold">65%</span>
+                    </div>
+                    <input id="audio-threshold-slider" type="range" min="30" max="95" value="65" class="w-full accent-amber-400 cursor-pointer">
+                    <p class="text-[11px] text-zinc-500 mt-1">Sets the minimum microphone audio spike required to trigger next slide in Energy mode.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Default Song Data: First Love - Nikka Costa
+        const DEFAULT_SONG = {
+            title: "First Love",
+            artist: "Nikka Costa",
+            originalKey: "G",
+            sections: [
+                {
+                    title: "Intro",
+                    lines: [
+                        { chord: "G  Cm", lyric: "" }
+                    ]
+                },
+                {
+                    title: "Verse 1 (Part 1)",
+                    lines: [
+                        { chord: "G           Am", lyric: "Every one can see" },
+                        { chord: "D              G", lyric: "There's a change in me" },
+                        { chord: "Em              Am", lyric: "They all say I'm not the same" },
+                        { chord: "A               D", lyric: "Kid I used to be" }
+                    ]
+                },
+                {
+                    title: "Verse 1 (Part 2)",
+                    lines: [
+                        { chord: "G               Am", lyric: "Don't go out and play" },
+                        { chord: "D              G", lyric: "I just dream all day" },
+                        { chord: "Em                  Am", lyric: "They don't know what's wrong with me" },
+                        { chord: "A               D", lyric: "And I'm too shy to say" }
+                    ]
+                },
+                {
+                    title: "Refrain (Part 1)",
+                    lines: [
+                        { chord: "G", lyric: "It's my first love" },
+                        { chord: "B", lyric: "What I'm dreamin' of" },
+                        { chord: "Em", lyric: "When I go to bed" },
+                        { chord: "Dm      G       C", lyric: "When I lay my head upon my pillow" },
+                        { chord: "Am      D", lyric: "Don't know what to do" }
+                    ]
+                },
+                {
+                    title: "Refrain (Part 2)",
+                    lines: [
+                        { chord: "G", lyric: "My first love" },
+                        { chord: "B", lyric: "Thinks that I'm too young" },
+                        { chord: "Em", lyric: "He doesn't even know" },
+                        { chord: "Dm      G", lyric: "Wish that I could show him" },
+                        { chord: "C", lyric: "What I'm feelin'" },
+                        { chord: "Am      D       G", lyric: "'cause I'm feelin' my first love" }
+                    ]
+                },
+                {
+                    title: "Instrumental",
+                    lines: [
+                        { chord: "G  Cm", lyric: "" }
+                    ]
+                },
+                {
+                    title: "Verse 2 (Part 1)",
+                    lines: [
+                        { chord: "G             Am", lyric: "Mirror on the wall" },
+                        { chord: "D              G", lyric: "Does he care at all" },
+                        { chord: "Em               Am", lyric: "Will he ever notice me" },
+                        { chord: "A               D", lyric: "Could he ever fall" }
+                    ]
+                },
+                {
+                    title: "Verse 2 (Part 2)",
+                    lines: [
+                        { chord: "G             Am", lyric: "Tell me teddy bear" },
+                        { chord: "D              G", lyric: "Why love is so unfair" },
+                        { chord: "Em               Am", lyric: "Will I ever find a way" },
+                        { chord: "A               D", lyric: "An answer to my prayer" }
+                    ]
+                },
+                {
+                    title: "Refrain (Part 1)",
+                    lines: [
+                        { chord: "G", lyric: "For my first love" },
+                        { chord: "B", lyric: "What I'm dreamin' of" },
+                        { chord: "Em", lyric: "When I go to bed" },
+                        { chord: "Dm      G       C", lyric: "When I lay my head upon my pillow" },
+                        { chord: "Am      D", lyric: "Don't know what to do" }
+                    ]
+                },
+                {
+                    title: "Refrain (Part 2)",
+                    lines: [
+                        { chord: "G", lyric: "My first love" },
+                        { chord: "B", lyric: "Thinks that I'm too young" },
+                        { chord: "Em", lyric: "He doesn't even know" },
+                        { chord: "Dm      G", lyric: "Wish that I could show him what I'm" },
+                        { chord: "C", lyric: "feelin'" },
+                        { chord: "Am      D       G", lyric: "'cause I'm feelin' my first love" }
+                    ]
+                },
+                {
+                    title: "Outro",
+                    lines: [
+                        { chord: "Cm  G", lyric: "My first love" }
+                    ]
+                }
+            ]
+        };
+
+        // App State
+        let currentSong = JSON.parse(JSON.stringify(DEFAULT_SONG));
+        let currentSectionIndex = 0;
+        let transposeOffset = 0;
+        let fontSizeLevel = 2; // 1: small, 2: medium, 3: large, 4: extra large
+
+        // Audio & Auto-Progress Engine State
+        let isListening = false;
+        let listeningMode = 'speech'; // 'speech' or 'audio'
+        let speechSensitivity = 0.5;  // match threshold (0.2 to 0.9)
+        let audioThreshold = 0.65;    // volume peak trigger threshold (0.3 to 0.95)
+        
+        // Web Speech API
+        let speechRecognition = null;
+        let speechRecognitionActive = false;
+
+        // Web Audio API
+        let audioCtx = null;
+        let analyserNode = null;
+        let micStream = null;
+        let audioAnimFrame = null;
+        let lastTriggerTime = 0;
+
+        // Musical Notes for Transposition
+        const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const FLAT_EQUIVALENTS = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#' };
+
+        // DOM Elements
+        const slideContent = document.getElementById('slide-content');
+        const sectionBadge = document.getElementById('section-badge');
+        const sectionCounter = document.getElementById('section-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const songTitleDisplay = document.getElementById('song-title-display');
+        const songArtistDisplay = document.getElementById('song-artist-display');
+        const currentKeyDisplay = document.getElementById('current-key-display');
+        const transposeOffsetDisplay = document.getElementById('transpose-offset');
+        const resetTransposeBtn = document.getElementById('reset-transpose');
+        const currentSectionLabel = document.getElementById('current-section-label');
+        const sectionsList = document.getElementById('sections-list');
+
+        // Initialize App
+        window.onload = () => {
+            lucide.createIcons();
+            loadSong(currentSong);
+            setupEventListeners();
+            initAudioEngines();
+        };
+
+        // Initialize Speech and Web Audio Engines
+        function initAudioEngines() {
+            // Check Web Speech API Support
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const speechBadge = document.getElementById('badge-speech-engine');
+
+            if (SpeechRec) {
+                speechRecognition = new SpeechRec();
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+                speechRecognition.lang = 'en-US';
+
+                speechRecognition.onstart = () => {
+                    speechRecognitionActive = true;
+                    if (speechBadge) {
+                        speechBadge.innerText = 'Speech Engine Active';
+                        speechBadge.className = 'px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+                    }
+                };
+
+                speechRecognition.onresult = (event) => {
+                    if (!isListening || listeningMode !== 'speech') return;
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+
+                    const combined = (finalTranscript + ' ' + interimTranscript).toLowerCase().trim();
+                    const transcriptDisplay = document.getElementById('speech-transcript-text');
+                    if (transcriptDisplay && combined) {
+                        transcriptDisplay.innerText = `"${combined}"`;
+                    }
+
+                    checkSpeechMatch(combined);
+                };
+
+                speechRecognition.onerror = (err) => {
+                    console.warn("Speech recognition error:", err.error);
+                };
+
+                speechRecognition.onend = () => {
+                    speechRecognitionActive = false;
+                    // Auto-restart if listening toggle is still enabled
+                    if (isListening && listeningMode === 'speech') {
+                        try { speechRecognition.start(); } catch(e) {}
+                    } else if (speechBadge) {
+                        speechBadge.innerText = 'Speech Engine Ready';
+                        speechBadge.className = 'px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700';
+                    }
+                };
+            } else {
+                if (speechBadge) {
+                    speechBadge.innerText = 'Speech API Unavailable';
+                    speechBadge.className = 'px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20';
+                }
+            }
+        }
+
+        // Check if recognized speech matches key lyrics in the current section
+        function checkSpeechMatch(transcript) {
+            const now = Date.now();
+            if (now - lastTriggerTime < 2200) return; // Cooldown to prevent double triggering
+
+            const currentSection = currentSong.sections[currentSectionIndex];
+            if (!currentSection) return;
+
+            // Extract words from lyrics in current section
+            const lyricWords = currentSection.lines
+                .map(l => l.lyric.toLowerCase().replace(/[^a-z0-9\s]/g, ''))
+                .filter(Boolean)
+                .join(' ')
+                .split(/\s+/);
+
+            if (lyricWords.length === 0) return;
+
+            // Focus on key phrases near the end of section lines
+            const keyPhrases = [];
+            currentSection.lines.forEach(l => {
+                const cleaned = l.lyric.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+                if (cleaned) {
+                    const words = cleaned.split(/\s+/);
+                    if (words.length >= 2) {
+                        keyPhrases.push(words.slice(-2).join(' ')); // Last 2 words of a line
+                        keyPhrases.push(words.join(' '));
+                    } else {
+                        keyPhrases.push(cleaned);
+                    }
+                }
+            });
+
+            // Check if transcript contains any end phrase or sufficient word match
+            for (const phrase of keyPhrases) {
+                if (phrase && transcript.includes(phrase)) {
+                    lastTriggerTime = Date.now();
+                    highlightTriggerSuccess();
+                    nextSection();
+                    return;
+                }
+            }
+        }
+
+        // Visual flash indicator on auto-trigger
+        function highlightTriggerSuccess() {
+            const transcriptDisplay = document.getElementById('speech-transcript-text');
+            if (transcriptDisplay) {
+                transcriptDisplay.classList.add('text-emerald-400', 'font-bold');
+                setTimeout(() => {
+                    transcriptDisplay.classList.remove('text-emerald-400', 'font-bold');
+                }, 1000);
+            }
+        }
+
+        // Web Audio API Setup & Listening Loop
+        async function startAudioEngine() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+
+                if (!micStream) {
+                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                }
+
+                const source = audioCtx.createMediaStreamSource(micStream);
+                analyserNode = audioCtx.createAnalyser();
+                analyserNode.fftSize = 256;
+                source.connect(analyserNode);
+
+                const audioBadge = document.getElementById('badge-audio-engine');
+                if (audioBadge) {
+                    audioBadge.innerText = 'Audio Analyzer Active';
+                    audioBadge.className = 'px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+                }
+
+                processAudioFrame();
+            } catch (err) {
+                console.error("Microphone access failed:", err);
+                alert("Microphone permission is required for Auto-Progress listening features.");
+                stopListening();
+            }
+        }
+
+        // Process Web Audio Level & Peak Strum Detection
+        function processAudioFrame() {
+            if (!isListening) return;
+
+            if (analyserNode) {
+                const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+                analyserNode.getByteFrequencyData(dataArray);
+
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / dataArray.length;
+                const volumeNormalized = Math.min(1, average / 128); // 0 to 1
+
+                // Update Visual VU Meter Bar
+                const vuBar = document.getElementById('vu-meter-bar');
+                if (vuBar) {
+                    vuBar.style.width = `${Math.round(volumeNormalized * 100)}%`;
+                    vuBar.className = volumeNormalized > audioThreshold 
+                        ? 'h-full bg-amber-400 transition-all duration-75' 
+                        : 'h-full bg-emerald-500 transition-all duration-75';
+                }
+
+                // Strum Peak Mode Auto Advance Trigger
+                if (listeningMode === 'audio' && volumeNormalized >= audioThreshold) {
+                    const now = Date.now();
+                    if (now - lastTriggerTime > 2500) { // 2.5 second delay between strum triggers
+                        lastTriggerTime = now;
+                        highlightTriggerSuccess();
+                        nextSection();
+                    }
+                }
+            }
+
+            audioAnimFrame = requestAnimationFrame(processAudioFrame);
+        }
+
+        // Toggle Auto Progress Listening
+        function toggleListening() {
+            isListening = !isListening;
+            const btnLabel = document.getElementById('listen-btn-label');
+            const micDot = document.getElementById('mic-dot');
+            const micIcon = document.getElementById('mic-icon');
+            const transcriptDisplay = document.getElementById('speech-transcript-text');
+
+            if (isListening) {
+                btnLabel.innerText = 'Listening On';
+                micDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+                micIcon.className = 'w-4 h-4 text-emerald-400 animate-bounce';
+
+                startAudioEngine();
+
+                if (listeningMode === 'speech' && speechRecognition && !speechRecognitionActive) {
+                    try { speechRecognition.start(); } catch(e) {}
+                    if (transcriptDisplay) transcriptDisplay.innerText = 'Listening for lyrics...';
+                } else if (listeningMode === 'audio' && transcriptDisplay) {
+                    transcriptDisplay.innerText = 'Monitoring acoustic strum peaks...';
+                }
+            } else {
+                stopListening();
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            const btnLabel = document.getElementById('listen-btn-label');
+            const micDot = document.getElementById('mic-dot');
+            const micIcon = document.getElementById('mic-icon');
+            const transcriptDisplay = document.getElementById('speech-transcript-text');
+            const vuBar = document.getElementById('vu-meter-bar');
+
+            btnLabel.innerText = 'Auto-Progress Off';
+            micDot.className = 'w-2.5 h-2.5 rounded-full bg-zinc-600';
+            micIcon.className = 'w-4 h-4 text-zinc-500';
+
+            if (transcriptDisplay) transcriptDisplay.innerText = 'Listening paused...';
+            if (vuBar) vuBar.style.width = '0%';
+
+            if (speechRecognition && speechRecognitionActive) {
+                try { speechRecognition.stop(); } catch(e) {}
+            }
+            if (audioAnimFrame) {
+                cancelAnimationFrame(audioAnimFrame);
+            }
+        }
+
+        // Load a song into state and render
+        function loadSong(songData) {
+            currentSong = songData;
+            currentSectionIndex = 0;
+            transposeOffset = 0;
+
+            songTitleDisplay.innerText = songData.title || "Untitled Song";
+            songArtistDisplay.innerText = songData.artist || "Unknown Artist";
+            
+            updateKeyDisplay();
+            renderSectionsList();
+            renderCurrentSection();
+        }
+
+        // Render current section slides
+        function renderCurrentSection() {
+            const section = currentSong.sections[currentSectionIndex];
+            if (!section) return;
+
+            // Trigger smooth transition out
+            slideContent.classList.remove('slide-active');
+            slideContent.classList.add('slide-enter');
+
+            setTimeout(() => {
+                // Clear existing content
+                slideContent.innerHTML = '';
+
+                // Build Chord / Lyric Pairs
+                section.lines.forEach((pair) => {
+                    const lineBlock = document.createElement('div');
+                    lineBlock.className = 'mb-6 last:mb-0 flex flex-col items-center justify-center';
+
+                    // Transposed chord string
+                    const transposedChord = transposeChordLine(pair.chord, transposeOffset);
+
+                    // Font size mapping classes
+                    const chordSizeClasses = ['text-lg sm:text-xl', 'text-xl sm:text-2xl', 'text-2xl sm:text-3xl', 'text-3xl sm:text-4xl'];
+                    const lyricSizeClasses = ['text-base sm:text-lg', 'text-lg sm:text-xl', 'text-xl sm:text-2xl', 'text-2xl sm:text-3xl'];
+
+                    const currentChordSize = chordSizeClasses[fontSizeLevel - 1];
+                    const currentLyricSize = lyricSizeClasses[fontSizeLevel - 1];
+
+                    // Render chord line if present
+                    if (transposedChord && transposedChord.trim().length > 0) {
+                        const chordEl = document.createElement('div');
+                        chordEl.className = `chord-font chord-text font-bold tracking-wider leading-tight text-center ${currentChordSize}`;
+                        chordEl.textContent = transposedChord;
+                        lineBlock.appendChild(chordEl);
+                    }
+
+                    // Render lyric line if present
+                    if (pair.lyric && pair.lyric.trim().length > 0) {
+                        const lyricEl = document.createElement('div');
+                        lyricEl.className = `font-medium text-slate-100 leading-snug text-center tracking-normal ${currentLyricSize}`;
+                        lyricEl.textContent = pair.lyric;
+                        lineBlock.appendChild(lyricEl);
+                    }
+
+                    slideContent.appendChild(lineBlock);
+                });
+
+                // Update Badges & Indicators
+                sectionBadge.innerText = section.title || `Section ${currentSectionIndex + 1}`;
+                sectionCounter.innerText = `Section ${currentSectionIndex + 1} of ${currentSong.sections.length}`;
+                currentSectionLabel.innerText = `${currentSectionIndex + 1}. ${section.title}`;
+
+                // Update Progress Bar Percentage
+                const progressPct = ((currentSectionIndex + 1) / currentSong.sections.length) * 100;
+                progressBar.style.width = `${progressPct}%`;
+
+                // Update Section Active State in Drawer
+                updateActiveSectionInDrawer();
+
+                // Trigger smooth transition in
+                slideContent.classList.remove('slide-enter');
+                slideContent.classList.add('slide-active');
+            }, 120);
+        }
+
+        // Transpose chord line maintaining character position
+        function transposeChordLine(line, offset) {
+            if (!line || offset === 0) return line;
+
+            // Chord matching regex
+            const chordRegex = /\b[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add|[0-9])*(?:\/[A-G](?:#|b)?)?\b/g;
+
+            return line.replace(chordRegex, (match) => {
+                return transposeSingleChord(match, offset);
+            });
+        }
+
+        // Transpose a single chord string (e.g. "G#m7/F#")
+        function transposeSingleChord(chordStr, offset) {
+            // Handle slash chords (e.g., C/G)
+            if (chordStr.includes('/')) {
+                const parts = chordStr.split('/');
+                return `${transposeSingleChord(parts[0], offset)}/${transposeSingleChord(parts[1], offset)}`;
+            }
+
+            // Extract root note
+            const match = chordStr.match(/^([A-G][#b]?)(.*)/);
+            if (!match) return chordStr;
+
+            let root = match[1];
+            const suffix = match[2];
+
+            // Normalize flat root to sharp equivalent for lookup
+            if (FLAT_EQUIVALENTS[root]) {
+                root = FLAT_EQUIVALENTS[root];
+            }
+
+            const rootIndex = CHROMATIC_SCALE.indexOf(root);
+            if (rootIndex === -1) return chordStr;
+
+            let newIndex = (rootIndex + offset) % 12;
+            if (newIndex < 0) newIndex += 12;
+
+            return CHROMATIC_SCALE[newIndex] + suffix;
+        }
+
+        // Key Display Update
+        function updateKeyDisplay() {
+            const originalKey = currentSong.originalKey || 'G';
+            const transposedKey = transposeSingleChord(originalKey, transposeOffset);
+            currentKeyDisplay.innerText = transposedKey;
+
+            if (transposeOffset !== 0) {
+                transposeOffsetDisplay.innerText = `(${transposeOffset > 0 ? '+' : ''}${transposeOffset})`;
+                resetTransposeBtn.classList.remove('hidden');
+            } else {
+                transposeOffsetDisplay.innerText = '';
+                resetTransposeBtn.classList.add('hidden');
+            }
+        }
+
+        // Navigation Handlers
+        function nextSection() {
+            if (currentSectionIndex < currentSong.sections.length - 1) {
+                currentSectionIndex++;
+                renderCurrentSection();
+            }
+        }
+
+        function prevSection() {
+            if (currentSectionIndex > 0) {
+                currentSectionIndex--;
+                renderCurrentSection();
+            }
+        }
+
+        function goToSection(index) {
+            if (index >= 0 && index < currentSong.sections.length) {
+                currentSectionIndex = index;
+                renderCurrentSection();
+                closeDrawer();
+            }
+        }
+
+        // Render Section Drawer List
+        function renderSectionsList() {
+            sectionsList.innerHTML = '';
+            currentSong.sections.forEach((sec, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-4 py-3 rounded-xl flex items-center justify-between text-sm font-medium transition ${
+                    idx === currentSectionIndex 
+                        ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' 
+                        : 'bg-zinc-800/50 hover:bg-zinc-800 text-zinc-300 border border-transparent'
+                }`;
+                btn.onclick = () => goToSection(idx);
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-400">${idx + 1}</span>
+                        <span>${sec.title || 'Section ' + (idx + 1)}</span>
+                    </div>
+                    <span class="text-xs text-zinc-500 font-normal">${sec.lines.length} lines</span>
+                `;
+                sectionsList.appendChild(btn);
+            });
+        }
+
+        function updateActiveSectionInDrawer() {
+            const buttons = sectionsList.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                if (idx === currentSectionIndex) {
+                    btn.className = 'w-full text-left px-4 py-3 rounded-xl flex items-center justify-between text-sm font-medium transition bg-amber-500/15 text-amber-400 border border-amber-500/30';
+                } else {
+                    btn.className = 'w-full text-left px-4 py-3 rounded-xl flex items-center justify-between text-sm font-medium transition bg-zinc-800/50 hover:bg-zinc-800 text-zinc-300 border border-transparent';
+                }
+            });
+        }
+
+        // Modal Controllers
+        function openDrawer() {
+            const drawer = document.getElementById('section-drawer');
+            drawer.classList.remove('opacity-0', 'pointer-events-none');
+            drawer.children[0].classList.remove('translate-y-4');
+        }
+
+        function closeDrawer() {
+            const drawer = document.getElementById('section-drawer');
+            drawer.classList.add('opacity-0', 'pointer-events-none');
+            drawer.children[0].classList.add('translate-y-4');
+        }
+
+        function openSongsModal() {
+            const modal = document.getElementById('songs-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            renderPresetSongs();
+        }
+
+        function closeSongsModal() {
+            const modal = document.getElementById('songs-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function openShortcutsModal() {
+            const modal = document.getElementById('shortcuts-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeShortcutsModal() {
+            const modal = document.getElementById('shortcuts-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Render preset list
+        function renderPresetSongs() {
+            const list = document.getElementById('preset-songs-list');
+            list.innerHTML = `
+                <div onclick="loadPreset(DEFAULT_SONG)" class="p-3 bg-zinc-800 hover:bg-zinc-750 border border-zinc-700/70 rounded-xl cursor-pointer flex items-center justify-between transition">
+                    <div>
+                        <h5 class="font-bold text-white text-sm">First Love</h5>
+                        <p class="text-xs text-zinc-400">Nikka Costa • Key of G</p>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">Active</span>
+                </div>
+            `;
+        }
+
+        function loadPreset(songObj) {
+            loadSong(JSON.parse(JSON.stringify(songObj)));
+            closeSongsModal();
+        }
+
+        // Parse Raw Tab Text into Structured Song Sections
+        function parseCustomTab(title, artist, rawText) {
+            const lines = rawText.split('\n');
+            const sections = [];
+            let currentSection = { title: "Verse 1", lines: [] };
+            
+            let i = 0;
+            while (i < lines.length) {
+                const line = lines[i].trimEnd();
+                
+                // Section Header Detection e.g., [Verse 1], [Refrain], [Chorus]
+                if (line.trim().startsWith('[') && line.trim().endsWith(']')) {
+                    if (currentSection.lines.length > 0) {
+                        sections.push(currentSection);
+                    }
+                    currentSection = {
+                        title: line.trim().substring(1, line.trim().length - 1),
+                        lines: []
+                    };
+                    i++;
+                    continue;
+                }
+
+                if (line.trim() === '') {
+                    i++;
+                    continue;
+                }
+
+                // Check if current line looks like chords
+                const nextLine = (i + 1 < lines.length) ? lines[i + 1].trimEnd() : '';
+                const isChordLine = looksLikeChordLine(line);
+
+                if (isChordLine && nextLine && !looksLikeChordLine(nextLine) && !nextLine.trim().startsWith('[')) {
+                    // Paired Chord + Lyric
+                    currentSection.lines.push({ chord: line, lyric: nextLine });
+                    i += 2;
+                } else if (isChordLine) {
+                    // Chord only
+                    currentSection.lines.push({ chord: line, lyric: '' });
+                    i++;
+                } else {
+                    // Lyric only
+                    currentSection.lines.push({ chord: '', lyric: line });
+                    i++;
+                }
+            }
+
+            if (currentSection.lines.length > 0) {
+                sections.push(currentSection);
+            }
+
+            return {
+                title: title || "Custom Song",
+                artist: artist || "Unknown Artist",
+                originalKey: "G",
+                sections: sections.length > 0 ? sections : [{ title: "Section 1", lines: [{ chord: "", lyric: rawText }] }]
+            };
+        }
+
+        function looksLikeChordLine(line) {
+            const trimmed = line.trim();
+            if (!trimmed) return false;
+            // High ratio of chord tokens/spaces to standard words
+            const chordRegex = /\b[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add|[0-9])*(?:\/[A-G](?:#|b)?)?\b/g;
+            const matches = trimmed.match(chordRegex) || [];
+            const words = trimmed.split(/\s+/);
+            return matches.length > 0 && (matches.length / words.length) >= 0.4;
+        }
+
+        // Event Listeners setup
+        function setupEventListeners() {
+            // Auto-Progress & Sensitivity Listeners
+            document.getElementById('toggle-listen-btn').onclick = toggleListening;
+            
+            document.getElementById('listen-mode-select').onchange = (e) => {
+                listeningMode = e.target.value;
+                if (isListening) {
+                    if (listeningMode === 'speech' && speechRecognition && !speechRecognitionActive) {
+                        try { speechRecognition.start(); } catch(err) {}
+                    }
+                }
+            };
+
+            // Sensitivity Modal Controls
+            const sensitivityModal = document.getElementById('sensitivity-modal');
+            document.getElementById('sensitivity-btn').onclick = () => {
+                sensitivityModal.classList.remove('opacity-0', 'pointer-events-none');
+            };
+            document.getElementById('close-sensitivity-modal').onclick = () => {
+                sensitivityModal.classList.add('opacity-0', 'pointer-events-none');
+            };
+            sensitivityModal.onclick = (e) => {
+                if (e.target.id === 'sensitivity-modal') sensitivityModal.classList.add('opacity-0', 'pointer-events-none');
+            };
+
+            const speechSlider = document.getElementById('speech-sensitivity-slider');
+            speechSlider.oninput = (e) => {
+                const val = e.target.value;
+                speechSensitivity = val / 100;
+                document.getElementById('speech-sensitivity-val').innerText = `${val}%`;
+            };
+
+            const audioSlider = document.getElementById('audio-threshold-slider');
+            audioSlider.oninput = (e) => {
+                const val = e.target.value;
+                audioThreshold = val / 100;
+                document.getElementById('audio-threshold-val').innerText = `${val}%`;
+            };
+
+            // Presentation Area Click/Tap Navigation
+            const mainArea = document.getElementById('presentation-area');
+            mainArea.addEventListener('click', (e) => {
+                // Ignore click if user clicked a control or modal
+                if (e.target.closest('button') || e.target.closest('#section-drawer') || e.target.closest('#songs-modal') || e.target.closest('#sensitivity-modal') || e.target.closest('#mic-monitor-bar')) {
+                    return;
+                }
+                
+                const rect = mainArea.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                
+                // Left 20% goes back, right 80% advances
+                if (clickX < rect.width * 0.2) {
+                    prevSection();
+                } else {
+                    nextSection();
+                }
+            });
+
+            // Keyboard Shortcuts Listener
+            document.addEventListener('keydown', (e) => {
+                // Ignore if typing in text inputs
+                if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+                if (e.ctrlKey && e.code === 'KeyL') {
+                    e.preventDefault();
+                    toggleListening();
+                    return;
+                }
+
+                switch (e.code) {
+                    case 'Space':
+                    case 'ArrowRight':
+                    case 'PageDown':
+                        e.preventDefault();
+                        nextSection();
+                        break;
+                    case 'ArrowLeft':
+                    case 'Backspace':
+                    case 'PageUp':
+                        e.preventDefault();
+                        prevSection();
+                        break;
+                    case 'Equal':
+                    case 'NumpadAdd':
+                        transposeOffset++;
+                        updateKeyDisplay();
+                        renderCurrentSection();
+                        break;
+                    case 'Minus':
+                    case 'NumpadSubtract':
+                        transposeOffset--;
+                        updateKeyDisplay();
+                        renderCurrentSection();
+                        break;
+                    case 'KeyF':
+                        toggleFullscreen();
+                        break;
+                }
+            });
+
+            // Controls
+            document.getElementById('next-btn').onclick = (e) => { e.stopPropagation(); nextSection(); };
+            document.getElementById('prev-btn').onclick = (e) => { e.stopPropagation(); prevSection(); };
+
+            // Transpose Buttons
+            document.getElementById('transpose-up').onclick = () => {
+                transposeOffset++;
+                updateKeyDisplay();
+                renderCurrentSection();
+            };
+            document.getElementById('transpose-down').onclick = () => {
+                transposeOffset--;
+                updateKeyDisplay();
+                renderCurrentSection();
+            };
+            resetTransposeBtn.onclick = () => {
+                transposeOffset = 0;
+                updateKeyDisplay();
+                renderCurrentSection();
+            };
+
+            // Font Sizing
+            document.getElementById('font-increase').onclick = () => {
+                if (fontSizeLevel < 4) {
+                    fontSizeLevel++;
+                    renderCurrentSection();
+                }
+            };
+            document.getElementById('font-decrease').onclick = () => {
+                if (fontSizeLevel > 1) {
+                    fontSizeLevel--;
+                    renderCurrentSection();
+                }
+            };
+
+            // Fullscreen Toggle
+            document.getElementById('fullscreen-btn').onclick = toggleFullscreen;
+
+            // Section Drawer
+            document.getElementById('section-menu-btn').onclick = openDrawer;
+            document.getElementById('close-drawer-btn').onclick = closeDrawer;
+            document.getElementById('section-drawer').onclick = (e) => {
+                if (e.target.id === 'section-drawer') closeDrawer();
+            };
+
+            // Songs Modal & Import
+            document.getElementById('open-songs-btn').onclick = openSongsModal;
+            document.getElementById('close-songs-modal').onclick = closeSongsModal;
+            document.getElementById('songs-modal').onclick = (e) => {
+                if (e.target.id === 'songs-modal') closeSongsModal();
+            };
+
+            document.getElementById('import-song-btn').onclick = () => {
+                const title = document.getElementById('custom-title').value;
+                const artist = document.getElementById('custom-artist').value;
+                const rawText = document.getElementById('custom-tab-text').value;
+
+                if (!rawText.trim()) return;
+
+                const parsedSong = parseCustomTab(title, artist, rawText);
+                loadSong(parsedSong);
+                closeSongsModal();
+            };
+
+            // Shortcuts Modal
+            document.getElementById('shortcuts-btn').onclick = openShortcutsModal;
+            document.getElementById('close-shortcuts-modal').onclick = closeShortcutsModal;
+            document.getElementById('shortcuts-modal').onclick = (e) => {
+                if (e.target.id === 'shortcuts-modal') closeShortcutsModal();
+            };
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
